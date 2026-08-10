@@ -16,3 +16,7 @@ desktop.ini
 *.key
 *.p12
 *.pfx
+
+# Minted lab certificates. The gen scripts rebuild them on demand and the
+# committed copies would expire, so history keeps the recipe, not the output.
+certs/
