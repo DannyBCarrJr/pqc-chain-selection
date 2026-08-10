@@ -97,18 +97,27 @@ received `signature_schemes` and has no accessor for the other list.
 
 ## The finding that outranks selection
 
-**Only OpenSSL can serve a post-quantum certificate at all.** Three of the four
-TLS libraries measured cannot load one, and they fail at different layers.
+**Only OpenSSL served a post-quantum certificate in these runs.** Three of the
+four stacks could not load one, and they failed at different layers.
+
+**Attribution correction, 2026-08-10.** An earlier version of this section blamed
+the library in every case. That is wrong for BoringSSL. Upstream BoringSSL at
+HEAD `e882d03` (2026-08-10) supports ML-DSA in TLS: `ssl/ssl_privkey.cc` defines
+`EVP_PKEY_ML_DSA_44/65/87`, the `SSL_SIGN_ML_DSA_*` signature algorithms, and
+lists `EVP_pkey_ml_dsa_*()` among supported keys. **The failure below belongs to
+the BoringSSL build bundled with Envoy 1.36.9, not to BoringSSL.** Go and rustls
+are library-level, and stated as such; BoringSSL is not.
 
 | library | serves an ML-DSA leaf? | error, verbatim |
 |---|---|---|
 | OpenSSL 3.5.5 | yes | |
 | Go 1.26 `crypto/tls` | no | `tls: failed to parse private key` |
 | rustls 0.23.43 with `ring` | no | `failed to parse private key as RSA, ECDSA, or EdDSA` |
-| BoringSSL, Envoy 1.36.9 | no | `Failed to load certificate chain from /chains/pq/fullchain.crt` |
+| BoringSSL **as bundled in Envoy 1.36.9** | no | `Failed to load certificate chain from /chains/pq/fullchain.crt` |
 
-Go and rustls stop at the private key. BoringSSL rejects the certificate itself,
-which is the stricter failure of the three.
+Go and rustls stop at the private key, and both are library-level limits.
+Envoy's bundled BoringSSL rejects the certificate itself, which is the stricter
+failure, but upstream BoringSSL is not the reason.
 
 **So the selection question is downstream of a more basic one.** A dual-stack
 migration needs a server that can hold a post-quantum certificate, and on this
@@ -181,9 +190,11 @@ time.
 ## Owed
 
 - BoringSSL's "first usable credential" behavior, which implies server config
-  order matters there and would differ from OpenSSL. **Blocked**, not merely
-  pending: Envoy will not load a post-quantum chain, so checking it needs a
-  BoringSSL build with ML-DSA support or a different mixed shape.
+  order matters there and would differ from OpenSSL. **Not blocked, mis-scoped.**
+  The ordering question is algorithm-agnostic and can be answered today with an
+  RSA and ECDSA pair, both of which Envoy loads. Answering it with post-quantum
+  chains needs a small server built against upstream BoringSSL using
+  `SSL_CTX_add1_credential`, which is the API the documented behavior describes.
 - Apache httpd and HAProxy, if the wrapper question is worth a second answer.
 - The Springer chapter (10.1007/978-3-032-16089-8_30), still unread, required
   before Phase 6.
