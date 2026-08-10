@@ -251,19 +251,69 @@ trackers. Vendor engineering blogs: Cloudflare, Google, AWS, Mozilla, Red Hat,
 nginx, and DigiCert. DigiCert's `LABS-mldsa-testserver`, which is single-chain
 and returned zero hits for dual, fallback, and `signature_algorithms`.
 
-**VENUE GAP, added 2026-08-10, and it applies to the claim at the top of this
-file.** The sweep above covered arXiv, IACR ePrint, GitHub, vendor engineering
-blogs, and the IETF. It did **not** cover MDPI journals or PubMed Central. That
-gap was caught in `pqc-chain-budget` the same day, when a directly on-topic
-*Sensors* paper from November 2024 turned out to have been missed by a sweep run
-three days earlier. MDPI's *Sensors*, *Entropy*, *Applied Sciences*,
-*Electronics*, *Mathematics*, and *Cryptography* publish post-quantum TLS work
-steadily, *Scientific Reports* does too, and PMC indexes all of them.
+**RE-SWEEP COMPLETED 2026-08-10.** The venue gap flagged earlier was real but
+mis-diagnosed. Re-run against PubMed Central (E-utilities) and Crossref
+(bibliographic query, MDPI member 1968 and all publishers), using structured
+APIs rather than web search so nothing passed through a summarizer.
 
-Before the Phase 6 flip, re-run the search across PMC and MDPI for certificate
-selection and `signature_algorithms_cert`, and name those venues in the scope
-sentence. A reviewer who finds an MDPI paper we missed damages the claim more
-than the paper itself would.
+**The framing was wrong: it was a METHOD gap more than a venue gap.** MDPI and
+PMC yielded nothing preempting. What the re-sweep actually surfaced came from a
+Crossref bibliographic query, which indexes every publisher with a DOI including
+ACM, and it is an ACM paper that four earlier sweeps missed. A structured
+Crossref query is a better prior-art net than web search plus arXiv plus ePrint,
+and it should lead every future sweep in all three repos.
+
+**PMC findings.** Exact-phrase `"certificate selection" AND post-quantum`
+returns **0 hits**. That negative is usable, because the same phrase alone
+returns 6 sensible hits, so the phrase search demonstrably works. Do NOT quote
+PMC counts for underscored terms: `"signature_algorithms_cert"` returns 519 hits
+consisting of cancer biology and federated learning, because PMC tokenizes and
+ORs. Those numbers are noise, not evidence.
+
+**MDPI via Crossref.** Nothing preempting. Closest items are performance
+analyses of post-quantum signature algorithms in *Cryptography*, *Algorithms*,
+and *Applied Sciences*, plus "A Readiness and Maturity Framework for
+Post-Quantum TLS Adoption" (2026). None measures server-side selection.
+
+### MUST CITE, and it was missing from all three repos
+
+**Paul, S., Kuzovkova, Y., Lahr, N., and Niederhagen, R. "Mixed Certificate
+Chains for the Transition to Post-Quantum Authentication in TLS 1.3." AsiaCCS
+2022, pages 727 to 740. DOI 10.1145/3488932.3497755. Also IACR ePrint
+2021/1447.**
+
+They named the concept. From the abstract: their strategy "is based on the
+concept of 'mixed certificate chains' which use different signature algorithms
+within the same certificate chain", and their result is that chains "containing
+hash-based signature schemes only at the root certificate authority level lead
+to feasible connection establishment times".
+
+**This project has been using that framing uncited.** `FINDINGS-mixed.md` and
+the `pqleaf` and `pqissuer` shapes are instances of their concept, arrived at
+independently for a different purpose. Cite them for the concept every time.
+
+**It does not preempt the measurement.** They evaluate handshake time,
+communication size, code size, and peak memory using custom client and server
+programs on embedded targets. Their axis is chain position, with hash-based
+schemes at the root for trust-anchor conservatism. This project's axis is leaf
+key versus issuer signature, measured against production server software, to see
+which chain gets selected. Neither `signature_algorithms_cert` nor server
+certificate selection appears in the abstract or in Paul's 2023 PKI Consortium
+deck on the same work, which was downloaded and grepped: zero hits for
+`signature_algorithms_cert`, certificate selection, nginx, or OpenSSL.
+
+Stamp: Reported. Abstract and slides read, ACM full text not obtained.
+
+**Also relevant, already cited in the sibling repos but not here:** Sikeridis,
+Huntley, Ott, and Devetsikiotis, "Intermediate certificate suppression in
+post-quantum TLS", CoNEXT 2022, DOI 10.1145/3555050.3569127.
+
+### Owed in the public repos
+
+`pqc-cert-matrix` mints a chain shape it calls `mixed` and is public with a DOI.
+It does not cite Paul et al. Adding that citation is a correctness fix a reviewer
+could otherwise raise, and it is Danny's call whether to do it now or at the next
+release.
 
 **Not obtained.** The Springer chapter above. `mailarchive.ietf.org` served a
 Cloudflare interstitial throughout, worked around through the mail-archive.com

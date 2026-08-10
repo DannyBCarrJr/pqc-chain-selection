@@ -5,6 +5,14 @@ Reproduce: `runners/single-chain.sh`. Evidence in `evidence/single-chain/`.
 
 **Stamp: Verified.** Chain identity from server-side handshake message lengths.
 
+## Prior art for the term
+
+"Mixed certificate chains" is Paul, Kuzovkova, Lahr, and Niederhagen, AsiaCCS
+2022 (DOI 10.1145/3488932.3497755), who defined it as using different signature
+algorithms within the same chain. Their purpose was trust-anchor conservatism,
+putting hash-based schemes at the root. The shapes below are instances of their
+concept aimed at a different question, and the concept is theirs.
+
 ## Why these two shapes
 
 `signature_algorithms` constrains CertificateVerify, so it is about the **leaf's
