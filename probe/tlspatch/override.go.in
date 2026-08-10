@@ -1,0 +1,53 @@
+// Added to crypto/tls at build time by ../tlspatch/build.sh via `go build -overlay`.
+// Not part of the Go distribution. See probe/tlspatch/README.md.
+//
+// This file exists so the patch to common.go is two inserted lines with no
+// import changes. common.go imports neither os nor strconv, and editing its
+// import block would be a far more fragile edit than adding a file.
+
+package tls
+
+import (
+	"os"
+	"strconv"
+	"strings"
+)
+
+// probeSigAlgOverride reads a signature scheme list from the named environment
+// variable. It reports ok=false when the variable is unset, which leaves stock
+// behavior untouched, so an unset environment produces a byte-identical
+// ClientHello to unpatched Go.
+//
+// Accepted values:
+//
+//	unset          stock behavior
+//	"none" or ""   empty list. For signature_algorithms_cert the marshaller
+//	               gates on len(...) > 0, so this suppresses the extension.
+//	"0x0403,..."   exactly these code points, in this order, unfiltered.
+//
+// Values are deliberately NOT validated against known schemes and NOT filtered
+// by isDisabledSignatureAlgorithm. Sending unknown or policy-disabled code
+// points is a measurement the matrix needs, not a mistake to guard against.
+func probeSigAlgOverride(env string) ([]SignatureScheme, bool) {
+	raw, set := os.LookupEnv(env)
+	if !set {
+		return nil, false
+	}
+	raw = strings.TrimSpace(raw)
+	if raw == "" || strings.EqualFold(raw, "none") {
+		return []SignatureScheme{}, true
+	}
+	var out []SignatureScheme
+	for _, f := range strings.Split(raw, ",") {
+		f = strings.TrimSpace(f)
+		if f == "" {
+			continue
+		}
+		n, err := strconv.ParseUint(strings.TrimPrefix(strings.TrimPrefix(f, "0x"), "0X"), 16, 16)
+		if err != nil {
+			panic("probe: bad code point in " + env + ": " + f)
+		}
+		out = append(out, SignatureScheme(n))
+	}
+	return out, true
+}

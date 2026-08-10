@@ -86,11 +86,23 @@ and that the probe reads the served chain from
 pool. The remaining Phase 1 work is the patch that makes
 `supportedSignatureAlgorithmsCert()` settable.
 
-**Gate:** the probe emits both extensions independently and demonstrably changes
-server behavior on the classical control. Half met: emission and chain readback
-are confirmed, and controlling the extension contents is what the patch buys.
-If the patch proves harder than an evening, stop. The probe work still stands on
-its own as the gap #32028 names.
+**GATE MET 2026-08-10** (`probe/tlspatch/FINDINGS.md`). Built via
+`go build -overlay`, two inserted lines in `common.go` plus one added file, no
+fork and no vendored Go source. Three cells measured server-side: stock sends
+extension 50 at 26 bytes, `0x0403,0x0804` shrinks it to 6, and `none` suppresses
+it. The restricted set excludes the RSA leaf's own `0x0401`, and **OpenSSL
+switched to the ECDSA chain**, so the probe demonstrably changes server
+behavior on the classical control.
+
+That last cell is also the first real finding. OpenSSL's chain check is live and
+correct when the client sends the extension, so the "dead code" reading holds
+only against clients that never populate it. Whether a server enforces the check
+is a property of the client talking to it. `PRIOR-ART.md` now carries that as
+measurement rather than inference.
+
+**Phase 1 is closed.** Next is Phase 2 minting and Phase 3 harness, where the
+question becomes whether that check survives depth, intermediates, and a
+production server wrapping the same library.
 
 Model call: opus + high.
 

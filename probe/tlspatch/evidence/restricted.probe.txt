@@ -1,0 +1,3 @@
+version:  TLS 1.3
+cipher:   TLS_AES_128_GCM_SHA256
+chain[0]: cn="control-ecdsa" pubkey=ECDSA sigalg=ECDSA-SHA256

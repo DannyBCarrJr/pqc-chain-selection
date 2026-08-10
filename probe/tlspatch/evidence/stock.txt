@@ -1,0 +1,113 @@
+Using default temp DH parameters
+ACCEPT
+TLS client extension "server name" (id=0), len=14
+0000 - 00 0c 00 00 09 6c 6f 63-61 6c 68 6f 73 74         .....localhost
+TLS client extension "EC point formats" (id=11), len=2
+0000 - 01 00                                             ..
+TLS client extension "renegotiation info" (id=65281), len=1
+0000 - 00                                                .
+TLS client extension "extended master secret" (id=23), len=0
+TLS client extension "signed certificate timestamps" (id=18), len=0
+TLS client extension "status request" (id=5), len=5
+0000 - 01 00 00 00 00                                    .....
+TLS client extension "supported_groups" (id=10), len=12
+0000 - 00 0a 11 ec 00 1d 00 17-00 18 00 19               ............
+TLS client extension "signature algorithms" (id=13), len=16
+0000 - 00 0e 08 04 04 03 08 07-08 05 08 06 05 03 06 03   ................
+TLS client extension "unknown" (id=50), len=26
+0000 - 00 18 08 04 04 03 08 07-08 05 08 06 04 01 05 01   ................
+0010 - 06 01 05 03 06 03 02 01-02 03                     ..........
+TLS client extension "supported versions" (id=43), len=3
+0000 - 02 03 04                                          ...
+TLS client extension "key share" (id=51), len=1258
+0000 - 04 e8 11 ec 04 c0 f3 11-aa b9 e2 7a e1 36 1b 13   ...........z.6..
+0010 - da 3a 1b 68 79 d0 b2 c0-43 b2 c6 94 d8 ce c2 62   .:.hy...C......b
+0020 - 9d 21 43 ac b7 f4 6a ae-35 4a d8 fb ce 38 5c 01   .!C...j.5J...8\.
+0030 - 2d fb 8e 3c fb 29 97 9c-b6 4d db 50 bd 59 71 d7   -..<.)...M.P.Yq.
+0040 - b9 67 3d 95 6a c2 d3 8e-0a a2 c9 61 b9 21 bc fb   .g=.j......a.!..
+0050 - c8 71 36 a7 ee 70 c6 29-ac 40 e9 f7 02 f1 14 ae   .q6..p.).@......
+0060 - 64 17 c4 75 46 65 fb 27-b8 b9 d4 10 67 b9 c5 21   d..uFe.'....g..!
+0070 - fa cd 2c f5 bb 57 b5 13-77 37 1b a3 76 ca 1b 9b   ..,..W..w7..v...
+0080 - 34 03 b3 c8 de ba 6c b2-33 06 98 e1 a2 68 f3 47   4.....l.3....h.G
+0090 - 28 c8 24 9f 0a 4e 3a 2c-cf a6 ab 18 e9 bb 53 99   (.$..N:,......S.
+00a0 - 3a b9 0f 39 23 6d a3 52-94 06 77 87 e8 06 3f 14   :..9#m.R..w...?.
+00b0 - 0d db 02 79 c6 0c 2c c1-d6 78 8d a7 01 03 b8 3d   ...y..,..x.....=
+00c0 - 7c 80 77 dc f2 54 71 4b-45 86 26 42 90 81 ab b7   |.w..TqKE.&B....
+00d0 - aa 1a d3 25 98 fb 4b be-11 00 aa 43 28 16 2d 61   ...%..K....C(.-a
+00e0 - 7d f6 69 28 f3 d9 cc f9-e9 6e 08 3b 16 79 62 91   }.i(.....n.;.yb.
+00f0 - 9e 6c af b6 45 7e bf d4-0f 2d 99 98 55 50 65 6d   .l..E~...-..UPem
+0100 - c2 15 ca bb 93 a8 80 7a-7a a7 6d 1c 08 a3 b4 f8   .......zz.m.....
+0110 - 73 99 ec 13 43 93 4b fa-40 75 74 55 4f 48 86 bd   s...C.K.@utUOH..
+0120 - b2 49 5c 29 d8 3e 99 10-a2 82 a4 6f 5a 92 02 2d   .I\).>.....oZ..-
+0130 - 02 bc a5 00 5a 06 4c 51-1a 43 a4 2c 8c 38 be 25   ....Z.LQ.C.,.8.%
+0140 - 24 86 69 01 9c ca 19 43-ac af 34 91 26 39 44 b4   $.i....C..4.&9D.
+0150 - fd 1b 71 8e 2b 7d 23 ab-1f 15 c2 a2 b9 b3 ad 27   ..q.+}#........'
+0160 - 84 3c 7e a1 64 1e b0 33-02 c5 07 0f a8 0c b1 d2   .<~.d..3........
+0170 - 74 0a 2a 6b 60 77 14 90-58 2a de a4 05 dc b6 17   t.*k`w..X*......
+0180 - b4 76 2d af da 8d ca ba-3a 6a cb 2b 11 30 39 20   .v-.....:j.+.09 
+0190 - 58 b8 36 db a4 fc 1b a9-b5 29 84 71 f4 87 ee c9   X.6......).q....
+01a0 - 94 e7 14 30 ce 0c c7 00-7c 69 5b 31 97 37 b3 7f   ...0....|i[1.7..
+01b0 - 62 08 48 b7 46 36 75 55-c5 6e bb 9f 57 43 54 1a   b.H.F6uU.n..WCT.
+01c0 - 4c 8b f2 65 b0 59 c9 1c-b1 3c bc 8f 5a 52 ac 18   L..e.Y...<..ZR..
+01d0 - 59 58 b4 27 59 2a 1b 95-b5 b0 83 c8 8b d3 46 3e   YX.'Y*........F>
+01e0 - 93 b7 b9 dd 3c 42 35 f8-40 58 21 b0 64 8c 20 ad   ....<B5.@X!.d. .
+01f0 - 7a 33 f4 f8 24 f9 ba 2a-ef 77 85 5f f5 1f a0 08   z3..$..*.w._....
+0200 - 49 37 59 31 99 39 bd 52-a0 a3 24 8a c6 72 fb 2c   I7Y1.9.R..$..r.,
+0210 - 13 d1 03 b4 c4 5e cc c9-00 28 34 6a 34 c5 ce 91   .....^...(4j4...
+0220 - d5 7c af a6 71 63 24 9d-47 28 b2 b1 b0 94 b6 1c   .|..qc$.G(......
+0230 - c9 ca c9 3a 09 ec 0e 05-73 7c 19 0c 88 00 21 8b   ...:....s|....!.
+0240 - 4d 7a 23 e3 02 c9 e3 b9-b2 18 99 64 41 eb 0b 36   Mz#........dA..6
+0250 - 3a 21 9d 02 8f bd 82 a8-e2 c6 2d d0 37 58 30 34   :!........-.7X04
+0260 - 67 b5 29 95 49 04 24 c1-7c 37 59 47 58 b9 37 64   g.).I.$.|7YGX.7d
+0270 - 73 9c 81 d7 eb 68 3f 93-9a ae 9c 2e 76 4c 3f 6b   s....h?.....vL?k
+0280 - b3 25 d7 f6 59 88 5c 9f-ac d2 60 6e a5 6b 86 97   .%..Y.\...`n.k..
+0290 - 54 09 db b6 2a 05 a4 cb-72 9b 6c fc 70 b6 32 55   T...*...r.l.p.2U
+02a0 - 67 ea 5d 7a b1 1e 4f 29-47 bc 0b b3 39 c4 38 87   g.]z..O)G...9.8.
+02b0 - f4 24 c6 e8 b5 b4 52 06-2a 35 6d b4 d3 cf 1b 6b   .$....R.*5m....k
+02c0 - 92 a1 4b 22 29 65 5b ea-22 75 7a d7 5b 1b e0 1d   ..K")e[."uz.[...
+02d0 - 1c ab 2a 7b ba 28 9b e7-10 cd 67 90 8b b4 2c d5   ..*{.(....g...,.
+02e0 - 21 43 6a 85 5d 4c b8 b9-97 58 10 f0 85 b1 f7 3b   !Cj.]L...X.....;
+02f0 - 75 cd 24 b7 c5 64 75 83-62 47 27 db 3b c3 d4 44   u.$..du.bG'.;..D
+0300 - 18 fc 37 6d f2 1f 1f c6-ad de 02 c6 1d b4 a9 1a   ..7m............
+0310 - b2 1d 47 0c c2 ad bc 88-00 1b 61 53 92 8e 72 75   ..G.......aS..ru
+0320 - c2 d5 c7 ce 82 98 84 b3-55 0f b4 d6 bd 1b da c4   ........U.......
+0330 - 2a 64 66 e7 22 26 f6 1a-7d 60 24 9a d2 6a 87 43   *df."&..}`$..j.C
+0340 - c2 45 a8 f4 14 cd 51 00-22 11 c2 d7 03 5e 06 15   .E....Q."....^..
+0350 - 4d 3e a6 73 31 e4 74 68-14 98 10 d6 7f eb d4 9a   M>.s1.th........
+0360 - 02 75 1d ed 39 ad 0d 45-20 74 bc 06 83 01 4a 5e   .u..9..E t....J^
+0370 - 76 a2 1f bc 8e ed c4 72-51 20 5b 87 2c bd 57 f1   v......rQ [.,.W.
+0380 - 1e 97 d2 86 67 b7 a6 37-37 2f df 80 0f 16 90 a1   ....g..77/......
+0390 - da 11 62 99 43 b7 1f 66-b5 11 5a 5f c1 c0 b6 be   ..b.C..f..Z_....
+03a0 - 96 02 b3 88 af 84 a2 ad-71 d1 62 23 43 87 de fb   ........q.b#C...
+03b0 - aa 35 fb 1a 4d b2 47 99-5c b0 91 95 05 73 80 a0   .5..M.G.\....s..
+03c0 - 69 68 2e 63 05 9b 81 79-a9 01 8a b1 15 92 62 ed   ih.c...y......b.
+03d0 - cb 0a 31 83 32 94 05 60-d9 06 78 9e 49 cf 6e aa   ..1.2..`..x.I.n.
+03e0 - 7b 3e 33 50 39 f0 9f 64-09 7f aa 91 96 ec b0 18   {>3P9..d........
+03f0 - 0b f0 ad cb 7a 0d f3 25-07 05 c8 89 ef b7 90 4e   ....z..%.......N
+0400 - e2 76 c1 37 c2 c4 a5 16-b5 06 36 75 e5 95 66 6c   .v.7......6u..fl
+0410 - cf 86 eb 51 90 c4 9b 59-1a 91 95 6c 9a 9f 14 a0   ...Q...Y...l....
+0420 - 03 d4 ad a9 13 6f 38 80-97 eb e4 93 2b b4 71 38   .....o8.....+.q8
+0430 - b9 32 2d 3a 47 33 5a c7-fa 39 95 db 62 4e eb a4   .2-:G3Z..9..bN..
+0440 - 80 92 18 a1 b9 b8 70 de-39 9e c4 2c 3e fe db 92   ......p.9..,>...
+0450 - 68 01 6c c0 4b 78 a5 86-3d 97 37 91 90 e4 b9 9c   h.l.Kx..=.7.....
+0460 - bc 76 5a 06 6f f1 70 69-a6 09 36 8d 84 05 69 90   .vZ.o.pi..6...i.
+0470 - b3 c9 4b b6 93 5c a5 0d-82 1b a9 67 44 a1 b9 27   ..K..\.....gD..'
+0480 - 69 ec 76 1c 57 9d 4c ff-4e 26 4b 22 52 9d 37 63   i.v.W.L.N&K"R.7c
+0490 - 4c e7 47 af c7 dc 29 15-4d 64 ad ec 63 e9 de 1c   L.G...).Md..c...
+04a0 - 00 cf eb 66 ea 1f f7 0a-d2 a1 d3 9d 5e 3b a3 66   ...f........^;.f
+04b0 - f2 a0 a8 cc 65 a2 64 97-22 35 1c e9 da 0e ff 88   ....e.d."5......
+04c0 - a2 42 6f 22 bc 50 00 1d-00 20 f7 0a d2 a1 d3 9d   .Bo".P... ......
+04d0 - 5e 3b a3 66 f2 a0 a8 cc-65 a2 64 97 22 35 1c e9   ^;.f....e.d."5..
+04e0 - da 0e ff 88 a2 42 6f 22-bc 50                     .....Bo".P
+   0 items in the session cache
+   0 client connects (SSL_connect())
+   0 client renegotiates (SSL_connect())
+   0 client connects that finished
+   1 server accepts (SSL_accept())
+   0 server renegotiates (SSL_accept())
+   1 server accepts that finished
+   0 session cache hits
+   0 session cache misses
+   0 session cache timeouts
+   0 callback cache hits
+   0 cache full overflows (128 allowed)
