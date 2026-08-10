@@ -267,11 +267,17 @@ than the paper itself would.
 
 **Not obtained.** The Springer chapter above. `mailarchive.ietf.org` served a
 Cloudflare interstitial throughout, worked around through the mail-archive.com
-mirror. **The rustls server-side selection path was not traced.** The sweep
-confirmed only that `SignatureAlgorithmsCert` appears as a `CertificateRequest`
-extension type in `rustls/src/msgs/handshake.rs` around line 1127, and did not
-follow `ResolvesServerCert`. That gap is exactly why rustls is the highest-value
-column rather than a settled one.
+mirror. **The rustls selection path is now traced. CLOSED 2026-08-10**, see
+`runners/FINDINGS-rustls.md`. Read in released 0.23.43 (tag `v/0.23.43`,
+2026-07-29) and dev HEAD `2cd5cc1` (2026-08-10). The `ClientHello` struct handed
+to `ResolvesServerCert::resolve` has eight fields and `signature_algorithms_cert`
+is not one of them, in either tree. In the release the identifier appears twice
+in the whole crate, both in `msgs/enums.rs`, as the code point and as an
+ECH-compressible extension. It is never parsed into a payload struct, so a custom
+resolver cannot honor it either. The `handshake.rs:1127` site the sweep found is
+the `CertificateRequest` direction, which is client authentication, not server
+selection. Searched the rustls issue tracker the same day for the extension name,
+open and closed: no results, which is weak evidence and not proof.
 
 ## What would kill this project
 
