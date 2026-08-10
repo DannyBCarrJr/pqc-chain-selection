@@ -53,12 +53,16 @@ argument for abandoning it.
 
 ## How a chain is identified, and why the client cannot do it
 
-Go 1.26 has **no ML-DSA support anywhere**: not `crypto/tls`, not `crypto/x509`,
-and there is no stdlib ML-DSA package. Against an ML-DSA leaf a Go client fails
-with `unsupported type of public key`, and it fails **before**
-`VerifyPeerCertificate` runs, so the raw-DER capture designed for exactly this
-case never fires. `served: NOTHING CAPTURED` in those cells means the client
-could not look, not that nothing arrived.
+Go 1.26 **does not expose ML-DSA to `crypto/x509` or `crypto/tls`.** Corrected
+2026-08-10: the ML-DSA primitive does exist in the standard library, at
+`crypto/internal/fips140/mldsa/`, but it is internal and unexported, and
+`crypto/x509` recognizes only ECDSA, Ed25519, and RSA signature algorithms. So
+against an ML-DSA leaf a Go client fails with `unsupported type of public key`,
+and it fails **before** `VerifyPeerCertificate` runs, so the raw-DER capture
+designed for exactly this case never fires. `served: NOTHING CAPTURED` in those
+cells means the client could not look, not that nothing arrived. The earlier
+wording "no ML-DSA support anywhere" was wrong: the algorithm is present, the
+X.509 and TLS wiring is not.
 
 Server-side handshake message length is therefore the ground truth, via
 `s_server -msg`:
@@ -74,11 +78,11 @@ message is 8.7 times larger on the post-quantum chain.
 
 ## The split worth writing up
 
-Go always sends `signature_algorithms_cert` and has no ML-DSA. OpenSSL supports
-ML-DSA natively and never sends the extension. **The stack that exercises the
-server's chain check cannot use post-quantum certificates, and the stack that can
-use them never triggers the check.** Both halves are Verified on this machine,
-from source and from the wire.
+Go always sends `signature_algorithms_cert` and does not expose ML-DSA to X.509.
+OpenSSL supports ML-DSA natively and never sends the extension. **The stack that
+exercises the server's chain check cannot use post-quantum certificates, and the
+stack that can use them never triggers the check.** Both halves are Verified on
+this machine, from source and from the wire.
 
 ## One bug worth remembering
 

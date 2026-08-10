@@ -8,7 +8,7 @@ under `runners/evidence/`. Versions are recorded per run, never assumed.
 | `openssl s_server` | 3.5.5 (27 Jan 2026) | OpenSSL |
 | nginx | 1.31.3, `nginx:alpine` | OpenSSL 3.5.7 |
 | Caddy | built from source, go1.26.0 | Go `crypto/tls` |
-| rustls | 0.23.43 (`v/0.23.43`, 2026-07-29) | rustls, `ring` provider |
+| rustls | 0.23.43 (`v/0.23.43`, 2026-07-29) | rustls; tested on both `ring` and the default `aws_lc_rs` |
 | Envoy | 1.36.9, `envoyproxy/envoy:v1.36-latest` | BoringSSL |
 
 Not covered: Apache httpd and HAProxy. Both wrap OpenSSL and answer a different
@@ -131,13 +131,24 @@ are library-level, and stated as such; BoringSSL is not.
 | library | serves an ML-DSA leaf? | error, verbatim |
 |---|---|---|
 | OpenSSL 3.5.5 | yes | |
-| Go 1.26 `crypto/tls` | no | `tls: failed to parse private key` |
-| rustls 0.23.43 with `ring` | no | `failed to parse private key as RSA, ECDSA, or EdDSA` |
+| Go 1.26 `crypto/tls` | no | `tls: failed to parse private key` (ML-DSA not wired to x509/tls; primitive exists in `crypto/internal/fips140/mldsa`) |
+| rustls 0.23.43, **both** `ring` and default `aws_lc_rs` | no | `failed to parse private key as RSA, ECDSA, or EdDSA` (rustls key-parsing layer, not the crypto provider) |
 | BoringSSL **as bundled in Envoy 1.36.9** | no | `Failed to load certificate chain from /chains/pq/fullchain.crt` |
 
 Go and rustls stop at the private key, and both are library-level limits.
 Envoy's bundled BoringSSL rejects the certificate itself, which is the stricter
 failure, but upstream BoringSSL is not the reason.
+
+**Provider audit, 2026-08-10.** The rustls result was first measured on the
+`ring` provider, which is not the default. rustls 0.23.43 defaults to
+`aws_lc_rs` (a BoringSSL fork that does have ML-DSA at the crypto layer) with
+`prefer-post-quantum`. Re-tested on the default provider: the ML-DSA leaf still
+fails to load, with the identical error, because the limit is in rustls's own
+key-parsing layer, which tries only RSA, ECDSA, and EdDSA regardless of
+provider. The headline selection result also reproduces on the default provider:
+`pqissuer` served, resolver still has no `signature_algorithms_cert` accessor.
+So both rustls findings hold for what people actually deploy, not only for the
+`ring` build.
 
 **So the selection question is downstream of a more basic one.** A dual-stack
 migration needs a server that can hold a post-quantum certificate, and on this

@@ -1,0 +1,16 @@
+[package]
+name = "rustls-selection-server-awslc"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# DEFAULT provider: aws-lc-rs, which is what rustls ships by default and what
+# most deployments use. Contrast with ../rustls-server which pins ring.
+[dependencies]
+rustls = { version = "=0.23.43", default-features = false, features = ["aws_lc_rs", "std", "logging"] }
+rustls-pemfile = "=2.2.0"
+rustls-pki-types = "=1.13.0"
+
+[[bin]]
+name = "rustls-selection-server-awslc"
+path = "src/main.rs"
