@@ -21,3 +21,4 @@ desktop.ini
 # committed copies would expire, so history keeps the recipe, not the output.
 certs/
 build/
+gen/chains/

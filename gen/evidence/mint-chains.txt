@@ -1,0 +1,77 @@
+OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)
+
+== chain: classical (root=EC int=EC leaf=EC) ==
+$ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out chains/classical/root.key
+$ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out chains/classical/int.key
+$ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out chains/classical/leaf.key
+$ openssl req -x509 -new -key chains/classical/root.key -out chains/classical/root.crt -subj /CN=Selection classical Root -days 90 -addext basicConstraints=critical,CA:TRUE -addext keyUsage=critical,keyCertSign,cRLSign
+$ openssl req -new -key chains/classical/int.key -out chains/classical/int.csr -subj /CN=Selection classical Intermediate
+$ openssl x509 -req -in chains/classical/int.csr -CA chains/classical/root.crt -CAkey chains/classical/root.key -out chains/classical/int.crt -days 60 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=Selection classical Intermediate
+$ openssl req -new -key chains/classical/leaf.key -out chains/classical/leaf.csr -subj /CN=localhost
+$ openssl x509 -req -in chains/classical/leaf.csr -CA chains/classical/int.crt -CAkey chains/classical/int.key -out chains/classical/leaf.crt -days 30 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=localhost
+-- verify (gate: a later failure must be selection, not a bad chain) --
+$ openssl verify -CAfile chains/classical/root.crt -untrusted chains/classical/int.crt chains/classical/leaf.crt
+chains/classical/leaf.crt: OK
+
+== chain: pq (root=ML-DSA-44 int=ML-DSA-44 leaf=ML-DSA-44) ==
+$ openssl genpkey -algorithm ML-DSA-44 -out chains/pq/root.key
+$ openssl genpkey -algorithm ML-DSA-44 -out chains/pq/int.key
+$ openssl genpkey -algorithm ML-DSA-44 -out chains/pq/leaf.key
+$ openssl req -x509 -new -key chains/pq/root.key -out chains/pq/root.crt -subj /CN=Selection pq Root -days 90 -addext basicConstraints=critical,CA:TRUE -addext keyUsage=critical,keyCertSign,cRLSign
+$ openssl req -new -key chains/pq/int.key -out chains/pq/int.csr -subj /CN=Selection pq Intermediate
+$ openssl x509 -req -in chains/pq/int.csr -CA chains/pq/root.crt -CAkey chains/pq/root.key -out chains/pq/int.crt -days 60 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=Selection pq Intermediate
+$ openssl req -new -key chains/pq/leaf.key -out chains/pq/leaf.csr -subj /CN=localhost
+$ openssl x509 -req -in chains/pq/leaf.csr -CA chains/pq/int.crt -CAkey chains/pq/int.key -out chains/pq/leaf.crt -days 30 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=localhost
+-- verify (gate: a later failure must be selection, not a bad chain) --
+$ openssl verify -CAfile chains/pq/root.crt -untrusted chains/pq/int.crt chains/pq/leaf.crt
+chains/pq/leaf.crt: OK
+
+== chain: pqleaf (root=EC int=EC leaf=ML-DSA-44) ==
+$ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out chains/pqleaf/root.key
+$ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out chains/pqleaf/int.key
+$ openssl genpkey -algorithm ML-DSA-44 -out chains/pqleaf/leaf.key
+$ openssl req -x509 -new -key chains/pqleaf/root.key -out chains/pqleaf/root.crt -subj /CN=Selection pqleaf Root -days 90 -addext basicConstraints=critical,CA:TRUE -addext keyUsage=critical,keyCertSign,cRLSign
+$ openssl req -new -key chains/pqleaf/int.key -out chains/pqleaf/int.csr -subj /CN=Selection pqleaf Intermediate
+$ openssl x509 -req -in chains/pqleaf/int.csr -CA chains/pqleaf/root.crt -CAkey chains/pqleaf/root.key -out chains/pqleaf/int.crt -days 60 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=Selection pqleaf Intermediate
+$ openssl req -new -key chains/pqleaf/leaf.key -out chains/pqleaf/leaf.csr -subj /CN=localhost
+$ openssl x509 -req -in chains/pqleaf/leaf.csr -CA chains/pqleaf/int.crt -CAkey chains/pqleaf/int.key -out chains/pqleaf/leaf.crt -days 30 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=localhost
+-- verify (gate: a later failure must be selection, not a bad chain) --
+$ openssl verify -CAfile chains/pqleaf/root.crt -untrusted chains/pqleaf/int.crt chains/pqleaf/leaf.crt
+chains/pqleaf/leaf.crt: OK
+
+== chain: pqissuer (root=ML-DSA-44 int=ML-DSA-44 leaf=EC) ==
+$ openssl genpkey -algorithm ML-DSA-44 -out chains/pqissuer/root.key
+$ openssl genpkey -algorithm ML-DSA-44 -out chains/pqissuer/int.key
+$ openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out chains/pqissuer/leaf.key
+$ openssl req -x509 -new -key chains/pqissuer/root.key -out chains/pqissuer/root.crt -subj /CN=Selection pqissuer Root -days 90 -addext basicConstraints=critical,CA:TRUE -addext keyUsage=critical,keyCertSign,cRLSign
+$ openssl req -new -key chains/pqissuer/int.key -out chains/pqissuer/int.csr -subj /CN=Selection pqissuer Intermediate
+$ openssl x509 -req -in chains/pqissuer/int.csr -CA chains/pqissuer/root.crt -CAkey chains/pqissuer/root.key -out chains/pqissuer/int.crt -days 60 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=Selection pqissuer Intermediate
+$ openssl req -new -key chains/pqissuer/leaf.key -out chains/pqissuer/leaf.csr -subj /CN=localhost
+$ openssl x509 -req -in chains/pqissuer/leaf.csr -CA chains/pqissuer/int.crt -CAkey chains/pqissuer/int.key -out chains/pqissuer/leaf.crt -days 30 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=localhost
+-- verify (gate: a later failure must be selection, not a bad chain) --
+$ openssl verify -CAfile chains/pqissuer/root.crt -untrusted chains/pqissuer/int.crt chains/pqissuer/leaf.crt
+chains/pqissuer/leaf.crt: OK
+
+== what each shape actually is ==
+chain      leaf key                 leaf signature           int signature           
+---------- ------------------------ ------------------------ ------------------------
+classical  id-ecPublicKey           ecdsa-with-SHA256        ecdsa-with-SHA256       
+pq         ML-DSA-44                ML-DSA-44                ML-DSA-44               
+pqleaf     ML-DSA-44                ecdsa-with-SHA256        ecdsa-with-SHA256       
+pqissuer   id-ecPublicKey           ML-DSA-44                ML-DSA-44               

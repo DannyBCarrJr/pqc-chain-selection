@@ -5,8 +5,8 @@ Workspace map: ~/Workspace/AGENTS.md  |  Shared steering: ~/.rocky/steering/
 
 - Stack: Go (probe client, forked `crypto/tls`), OpenSSL 3.5.5, Docker Compose
   (server harness), shell runners
-- Remote: none yet. Stays local and private until Phase 6.
-  `gh repo create DannyBCarrJr/pqc-chain-selection --private --source=. --remote=origin --push`
+- Remote: `github.com/DannyBCarrJr/pqc-chain-selection`, **PRIVATE**. Goes
+  public at Phase 6, after the pre-publication audit.
 - Branch: main
 - License at flip: MIT, matching `pqc-cert-matrix` and `pqc-chain-budget`
 

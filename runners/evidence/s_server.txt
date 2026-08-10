@@ -1,0 +1,14 @@
+# s_server control column, 2026-08-10T22:33:14Z
+# OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)
+# go version go1.26.0 linux/amd64
+# server holds: classical (EC root/int/leaf) and pq (ML-DSA-44 root/int/leaf), depth 3 each
+# 0x0403=ecdsa_secp256r1_sha256  0x0904=mldsa44 (code point read off the wire, not assumed)
+
+cell                   sigalgs        sigalgs_cert    Cert CertVfy  handshake
+---------------------- -------------- ---------- ------- -------  ---------
+classical-only         0x0403         0x0403         929      79  OK TLS 1.3 TLS_AES_128_GCM_SHA256
+pq-only-cert-stock     0x0904         -                -       -  FAILED remote error: tls: handshake failure
+pq-only-cert-pq        0x0904         0x0904        8100    2428  FAILED tls: server's certificate contains an unsupported type of public key: <nil>
+both-cert-ecdsa-only   0x0904,0x0403  0x0403         929      79  OK TLS 1.3 TLS_AES_128_GCM_SHA256
+both-cert-pq-only      0x0904,0x0403  0x0904        8100    2428  FAILED tls: server's certificate contains an unsupported type of public key: <nil>
+both-cert-suppressed   0x0904,0x0403  none          8100    2428  FAILED tls: server's certificate contains an unsupported type of public key: <nil>
