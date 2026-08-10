@@ -75,12 +75,32 @@ directives that Red Hat's RHEL 10 guidance points operators at.
 |---|---|---|---|
 | single-excluded | `0403` | `0403` | **served**, handshake OK |
 | single-allowed | `0403` | `0904` | served, handshake OK |
-| dual, either order | n/a | n/a | **would not start**, cannot load the ML-DSA chain |
+| dual, either order | n/a | n/a | **UNRESOLVED, see below** |
 
-The dual cells were written to test BoringSSL's documented "first usable
-credential" behavior in both configuration orders. **That test could not run**,
-because the post-quantum chain will not load, so whether config order decides
-selection on Envoy remains unmeasured.
+**The dual-chain result is withdrawn as UNRESOLVED, 2026-08-10.** `runners/envoy.sh`
+reports that Envoy will not start with a classical and a post-quantum chain
+configured together, and it reproduces on rerun. Ad-hoc probes of what looked
+like the same configuration reported the opposite. Attempts to isolate the
+difference across mount style, run mode, port publishing, `tls_params`, and YAML
+formatting did not converge, and the last attempt failed with an unrelated
+`Invalid path` error from Envoy's own config loader.
+
+**Two of the probe harnesses used in that diagnosis were themselves buggy**, one
+through an unquoted variable that made `docker run` never execute while the
+script printed a pass, so several intermediate "loads fine" results were false.
+Nothing about Envoy's dual-chain behavior should be claimed from any of it.
+
+What survives is the single-chain result above, which ran through the full
+runner with probe output on both cells and reproduced. What does not survive is
+any statement about whether Envoy can hold both chains at once, or about
+config-order selection on Envoy.
+
+**The clean way to settle it is not more Envoy debugging.** A small server built
+against upstream BoringSSL using `SSL_CTX_add1_credential` tests the documented
+behavior directly, against the API the documentation describes, with no YAML,
+no container, and no config-loading layer in between. Upstream BoringSSL has
+ML-DSA (`ssl/ssl_privkey.cc`), so that harness also answers whether the library
+can serve a post-quantum chain when it is not Envoy's build.
 
 ### Caddy (`runners/caddy.sh`)
 

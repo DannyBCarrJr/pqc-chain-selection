@@ -1,4 +1,4 @@
-# envoy column, 2026-08-10T23:12:37Z
+# envoy column, 2026-08-10T23:38:35Z
 # image envoyproxy/envoy:v1.36-latest
 #  envoy  version: 57198c441a298a75097c690726d90974549a9778/1.36.9/Clean/RELEASE/BoringSSL  
 # 0x0403=ecdsa_secp256r1_sha256  0x0904=mldsa44
@@ -11,8 +11,8 @@ single-allowed       0x0403         0x0904     key=ECDSA  OK TLS 1.3 TLS_AES_128
 
 # dual chain, and whether CONFIG ORDER decides (BoringSSL: first usable)
   envoy did not start:
-[2026-08-10 23:12:38.948][1][critical][main] [source/server/server.cc:453] error `Failed to load certificate chain from /chains/pq/fullchain.crt` initializing config '  /etc/envoy/envoy.yaml'
+[2026-08-10 23:38:37.098][1][critical][main] [source/server/server.cc:453] error `Failed to load certificate chain from /chains/pq/fullchain.crt` initializing config '  /etc/envoy/envoy.yaml'
 Failed to load certificate chain from /chains/pq/fullchain.crt
   envoy did not start:
-[2026-08-10 23:12:39.772][1][critical][main] [source/server/server.cc:453] error `Failed to load certificate chain from /chains/pq/fullchain.crt` initializing config '  /etc/envoy/envoy.yaml'
+[2026-08-10 23:38:37.908][1][critical][main] [source/server/server.cc:453] error `Failed to load certificate chain from /chains/pq/fullchain.crt` initializing config '  /etc/envoy/envoy.yaml'
 Failed to load certificate chain from /chains/pq/fullchain.crt
