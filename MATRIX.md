@@ -9,10 +9,10 @@ under `runners/evidence/`. Versions are recorded per run, never assumed.
 | nginx | 1.31.3, `nginx:alpine` | OpenSSL 3.5.7 |
 | Caddy | built from source, go1.26.0 | Go `crypto/tls` |
 | rustls | 0.23.43 (`v/0.23.43`, 2026-07-29) | rustls, `ring` provider |
+| Envoy | 1.36.9, `envoyproxy/envoy:v1.36-latest` | BoringSSL |
 
-Not covered: Envoy (BoringSSL), Apache httpd, HAProxy. httpd and HAProxy wrap
-OpenSSL and answer a different question about whether a wrapper overrides its
-library.
+Not covered: Apache httpd and HAProxy. Both wrap OpenSSL and answer a different
+question about whether a wrapper overrides its library.
 
 ## The headline cell
 
@@ -28,8 +28,10 @@ signatures on certificates. The only configured chain has exactly those.
 | nginx | **refused**, handshake_failure |
 | Caddy | **served** the excluded chain, handshake OK |
 | rustls | **served** the excluded chain, handshake OK |
+| Envoy | **served** the excluded chain, handshake OK |
 
-**Two and two, split by TLS library rather than by server.** The OpenSSL family
+**Three of five serve a chain the client excluded, split by TLS library rather
+than by server.** The OpenSSL family
 honors `signature_algorithms_cert` and declines when it cannot satisfy it. The Go
 and Rust stacks send the chain regardless, because neither consults the
 extension: Go's `SupportsCertificate` says so in a source comment, and rustls
@@ -67,6 +69,19 @@ extensions are treated as independent lists rather than one filtering the other.
 Identical to `s_server` throughout, using the repeated `ssl_certificate`
 directives that Red Hat's RHEL 10 guidance points operators at.
 
+### Envoy (`runners/envoy.sh`)
+
+| cell | `sigalgs` | `sigalgs_cert` | result |
+|---|---|---|---|
+| single-excluded | `0403` | `0403` | **served**, handshake OK |
+| single-allowed | `0403` | `0904` | served, handshake OK |
+| dual, either order | n/a | n/a | **would not start**, cannot load the ML-DSA chain |
+
+The dual cells were written to test BoringSSL's documented "first usable
+credential" behavior in both configuration orders. **That test could not run**,
+because the post-quantum chain will not load, so whether config order decides
+selection on Envoy remains unmeasured.
+
 ### Caddy (`runners/caddy.sh`)
 
 | cell | `sigalgs` | `sigalgs_cert` | result |
@@ -82,8 +97,35 @@ received `signature_schemes` and has no accessor for the other list.
 
 ## The finding that outranks selection
 
-**Go 1.26 cannot load an ML-DSA private key, so a Go server cannot serve a
-post-quantum leaf certificate at all.**
+**Only OpenSSL can serve a post-quantum certificate at all.** Three of the four
+TLS libraries measured cannot load one, and they fail at different layers.
+
+| library | serves an ML-DSA leaf? | error, verbatim |
+|---|---|---|
+| OpenSSL 3.5.5 | yes | |
+| Go 1.26 `crypto/tls` | no | `tls: failed to parse private key` |
+| rustls 0.23.43 with `ring` | no | `failed to parse private key as RSA, ECDSA, or EdDSA` |
+| BoringSSL, Envoy 1.36.9 | no | `Failed to load certificate chain from /chains/pq/fullchain.crt` |
+
+Go and rustls stop at the private key. BoringSSL rejects the certificate itself,
+which is the stricter failure of the three.
+
+**So the selection question is downstream of a more basic one.** A dual-stack
+migration needs a server that can hold a post-quantum certificate, and on this
+evidence that means the OpenSSL family today. For the other three, selection
+never gets a chance to be wrong, and the one post-quantum shape they can serve
+is `pqissuer`, a classical leaf under a post-quantum CA, which is exactly the
+shape they serve to clients that excluded it.
+
+### Error message quality, because an operator has to debug this
+
+rustls names the supported algorithms and is immediately actionable. Go is
+vague. Envoy is actively misleading twice over: it reports an **unreadable**
+key file as `Failed to load incomplete private key`, which sends you hunting a
+format problem that does not exist. That cost real time in this lab, and the
+runner now stages a readable copy with a comment saying why.
+
+### The Go detail
 
 `crypto/tls.LoadX509KeyPair` against each minted chain:
 
@@ -93,6 +135,8 @@ post-quantum leaf certificate at all.**
 | pqissuer | EC P-256 | loaded ok |
 | pqleaf | ML-DSA-44 | `tls: failed to parse private key` |
 | pq | ML-DSA-44 | `tls: failed to parse private key` |
+
+That table is `crypto/tls.LoadX509KeyPair` run directly, not through Caddy.
 
 That is why Caddy rejected the dual configuration: not a Caddyfile problem, and
 not a selection problem. Its error is `tls: failed to parse private key`, raised
@@ -113,7 +157,8 @@ operator running a mixed fleet during a migration.
 
 ## Owed
 
-- Envoy and BoringSSL, the remaining planned column.
+- Whether configuration order decides selection on Envoy and on nginx. Blocked
+  on Envoy by the chain-loading failure above.
 - A deliberate negative control: a broken chain that must be rejected.
 - Repeat runs. Every cell here is a single run.
 - The PMC and MDPI prior-art re-sweep, before anything publishes.

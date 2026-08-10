@@ -1,0 +1,4 @@
+handshake: OK TLS 1.3 TLS_AES_128_GCM_SHA256
+served:    2 certificate(s)
+  [0] cn="localhost" key=ECDSA sig=0 (2821 bytes DER)
+  [1] cn="Selection pqissuer Intermediate" key=0 sig=0 (4036 bytes DER)
