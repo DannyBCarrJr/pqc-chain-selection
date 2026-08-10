@@ -155,10 +155,35 @@ citing that SHOULD explicitly. Nothing in this matrix is a standards violation,
 and writing it up as one would be wrong. The finding is what happens to an
 operator running a mixed fleet during a migration.
 
+## What decides selection
+
+Answered 2026-08-10 in `runners/FINDINGS-controls.md`. On nginx, **server
+configuration order does not decide**: the same two chains in either order both
+served the post-quantum one. **The client's preference order decides**: with both
+chains configured and only the order inside the client's `signature_algorithms`
+changed, the served chain follows the client, 2428-byte CertificateVerify for
+ML-DSA first and 79-byte for ECDSA first.
+
+An operator therefore cannot steer which chain goes out by reordering the
+config. During a migration the client population decides, one connection at a
+time.
+
+## Controls
+
+- **Negative control passes.** One flipped byte inside the leaf signature is
+  rejected by a verifying client while the untampered chain passes, so the OK
+  verdicts in this matrix carry information.
+- **Repeatable.** The deciding cell ran five consecutive times with identical
+  results.
+- **Prior art re-swept** 2026-08-10 through the PubMed Central and Crossref
+  APIs. See `PRIOR-ART.md`.
+
 ## Owed
 
-- Whether configuration order decides selection on Envoy and on nginx. Blocked
-  on Envoy by the chain-loading failure above.
-- A deliberate negative control: a broken chain that must be rejected.
-- Repeat runs. Every cell here is a single run.
-- The PMC and MDPI prior-art re-sweep, before anything publishes.
+- BoringSSL's "first usable credential" behavior, which implies server config
+  order matters there and would differ from OpenSSL. **Blocked**, not merely
+  pending: Envoy will not load a post-quantum chain, so checking it needs a
+  BoringSSL build with ML-DSA support or a different mixed shape.
+- Apache httpd and HAProxy, if the wrapper question is worth a second answer.
+- The Springer chapter (10.1007/978-3-032-16089-8_30), still unread, required
+  before Phase 6.

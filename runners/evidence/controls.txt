@@ -1,0 +1,18 @@
+# controls, 2026-08-10T23:30:23Z
+# OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026) | go version go1.26.0 linux/amd64
+
+1. NEGATIVE CONTROL: verification must actually be happening
+  positive-untampered    pass     want=pass       
+  negative-tampered      reject   want=reject     
+
+2. CONFIG ORDER on nginx: same two chains, order swapped in the config
+   client accepts both leaf key types and both chain signature types
+  config order: classical then pq      served: pq chain (ML-DSA, client cannot parse it)
+  config order: pq then classical      served: pq chain (ML-DSA, client cannot parse it)
+
+3. REPEATABILITY: the deciding cell, five consecutive runs
+  run 1: FAILED remote error: tls: handshake failure
+  run 2: FAILED remote error: tls: handshake failure
+  run 3: FAILED remote error: tls: handshake failure
+  run 4: FAILED remote error: tls: handshake failure
+  run 5: FAILED remote error: tls: handshake failure

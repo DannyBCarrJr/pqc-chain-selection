@@ -1,0 +1,2 @@
+handshake: FAILED tls: failed to verify certificate: x509: certificate signed by unknown authority (possibly because of "x509: ECDSA verification failure" while trying to verify candidate authority certificate "Selection classical Intermediate")
+served:    NOTHING CAPTURED (no Certificate message reached the client)
