@@ -1,0 +1,16 @@
+# single-chain axis separation, 2026-08-10T22:38:47Z
+# OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026) | go version go1.26.0 linux/amd64
+# 0x0403=ecdsa_secp256r1_sha256  0x0904=mldsa44
+# want= is what RFC 8446 4.4.2.2 requires given the chain and the client constraints
+
+chain     sigalgs        sigalgs_cert    Cert CertVfy  got      expected      
+--------- -------------- ---------- ------- -------  -------- ------------- 
+# pqleaf: ML-DSA leaf key, ECDSA signatures on the chain
+pqleaf    0x0904         0x0403        2163    2428  served   want=served     
+pqleaf    0x0904         0x0904           -       -  refused  want=refused    
+pqleaf    0x0403         0x0403           -       -  refused  want=refused    
+
+# pqissuer: EC leaf key, ML-DSA signatures on the chain
+pqissuer  0x0403         0x0904        6875      79  served   want=served     
+pqissuer  0x0403         0x0403           -       -  refused  want=refused    
+pqissuer  0x0904         0x0904           -       -  refused  want=refused    
