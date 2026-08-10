@@ -1,0 +1,16 @@
+# nginx column, 2026-08-10T23:01:09Z
+# image nginx:alpine
+sh: openssl: not found
+# nginx version: nginx/1.31.3
+# 0x0403=ecdsa_secp256r1_sha256  0x0904=mldsa44
+
+cell               sigalgs        sigalgs_cert served     handshake
+------------------ -------------- ---------- ---------- ---------
+# single chain: pqissuer only. s_server REFUSED this, rustls SERVED it.
+single-excluded    0x0403         0x0403     NOTHING CAPTURED FAILED remote error: tls: handshake failure
+single-allowed     0x0403         0x0904     key=ECDSA  OK TLS 1.3 TLS_AES_128_GCM_SHA256
+
+# dual chain: classical + pq, the migration shape
+dual-ecdsa-only    0x0904,0x0403  0x0403     key=ECDSA  OK TLS 1.3 TLS_AES_128_GCM_SHA256
+dual-pq-only       0x0904,0x0403  0x0904     NOTHING CAPTURED FAILED tls: server's certificate contains an u
+dual-suppressed    0x0904,0x0403  none       NOTHING CAPTURED FAILED tls: server's certificate contains an u

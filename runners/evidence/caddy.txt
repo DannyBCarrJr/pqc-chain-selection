@@ -1,0 +1,12 @@
+# caddy column, 2026-08-10T23:05:22Z
+# unknown built with go1.26.0
+# 0x0403=ecdsa_secp256r1_sha256  0x0904=mldsa44
+
+cell               sigalgs        sigalgs_cert served     handshake
+------------------ -------------- ---------- ---------- ---------
+# single chain: pqissuer only. s_server and nginx REFUSED, rustls SERVED.
+single-excluded    0x0403         0x0403     key=ECDSA  OK TLS 1.3 TLS_AES_128_GCM_SHA256
+single-allowed     0x0403         0x0904     key=ECDSA  OK TLS 1.3 TLS_AES_128_GCM_SHA256
+
+# dual chain: classical + pq
+dual config REJECTED by caddy, see evidence/caddy/caddy.log

@@ -1,0 +1,2 @@
+handshake: FAILED tls: server's certificate contains an unsupported type of public key: <nil>
+served:    NOTHING CAPTURED (no Certificate message reached the client)

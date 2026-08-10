@@ -1,0 +1,10 @@
+{"level":"info","ts":1786403123.2645485,"msg":"maxprocs: Leaving GOMAXPROCS=10: CPU quota undefined"}
+{"level":"info","ts":1786403123.26456,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":30291078758,"previous":9223372036854775807}
+{"level":"info","ts":1786403123.2645628,"msg":"using config from file","file":"/tmp/tmp.ol9CUYSfvh/Caddyfile"}
+{"level":"info","ts":1786403123.2645643,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"warn","ts":1786403123.264565,"msg":"Caddyfile input is not formatted; run 'caddy fmt --overwrite' to fix inconsistencies","adapter":"caddyfile","file":"/tmp/tmp.ol9CUYSfvh/Caddyfile","line":2}
+{"level":"warn","ts":1786403123.2645674,"logger":"admin","msg":"admin endpoint disabled"}
+{"level":"info","ts":1786403123.2647314,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x20c6bc046b00"}
+{"level":"info","ts":1786403123.2647984,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x20c6bc046b00"}
+{"level":"info","ts":1786403123.2648182,"logger":"http","msg":"servers shutting down with eternal grace period"}
+Error: loading initial config: loading new config: loading http app module: provision http: getting tls app: loading tls app module: provision tls: loading certificates: tls: failed to parse private key

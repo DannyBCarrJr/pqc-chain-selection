@@ -1,0 +1,9 @@
+{
+    auto_https off
+    admin off
+}
+:4466 {
+    tls <REPO>/gen/chains/classical/fullchain.crt <REPO>/gen/chains/classical/leaf.key
+    tls <REPO>/gen/chains/pq/fullchain.crt <REPO>/gen/chains/pq/leaf.key
+    respond "ok"
+}

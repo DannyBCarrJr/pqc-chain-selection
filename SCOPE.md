@@ -100,9 +100,11 @@ only against clients that never populate it. Whether a server enforces the check
 is a property of the client talking to it. `PRIOR-ART.md` now carries that as
 measurement rather than inference.
 
-**Phase 1 is closed.** Next is Phase 2 minting and Phase 3 harness, where the
-question becomes whether that check survives depth, intermediates, and a
-production server wrapping the same library.
+**Phase 1 is closed.** Phases 2, 3, and 4 followed on 2026-08-10: four chain
+shapes minted, four stacks measured, results in `MATRIX.md`. The check does
+survive depth and a production wrapper (nginx matches its library exactly), and
+it is absent in both non-OpenSSL stacks. Remaining: Envoy, negative controls,
+repeat runs, and the prior-art re-sweep.
 
 Model call: opus + high.
 
