@@ -1,0 +1,16 @@
+[package]
+name = "rustls-selection-server"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# Pinned exactly. The whole point of this harness is that a version number
+# travels with every measured cell.
+[dependencies]
+rustls = { version = "=0.23.43", default-features = false, features = ["ring", "std", "logging"] }
+rustls-pemfile = "=2.2.0"
+rustls-pki-types = "=1.13.0"
+
+[[bin]]
+name = "rustls-selection-server"
+path = "src/main.rs"

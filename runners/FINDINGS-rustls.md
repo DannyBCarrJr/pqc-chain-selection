@@ -80,3 +80,89 @@ MUST, and Go's `crypto/tls` declines the same check in a source comment citing
 exactly that. Three of the five stacks in this matrix now decline it in some
 form. The finding is the operational consequence during a migration, not a
 standards violation.
+
+---
+
+# VERIFIED 2026-08-10: rustls serves a chain the client excluded
+
+The prediction above was run. rustls 0.23.43 built against `ring`, pinned in
+`runners/rustls-server/Cargo.toml`, serving `pqissuer` (EC leaf key under an
+ML-DSA-signed intermediate).
+
+Client: `signature_algorithms = 0x0403`, `signature_algorithms_cert = 0x0403`.
+The chain's certificates are ML-DSA-signed, so the client has excluded them.
+
+**OpenSSL 3.5.5 refused this exact cell** (`FINDINGS-mixed.md`, row 5).
+**rustls served it.**
+
+```
+handshake: OK TLS 1.3 TLS_AES_128_GCM_SHA256
+served:    2 certificate(s)
+  [0] cn="localhost"                        key=ECDSA sig=0  (2821 bytes DER)
+  [1] cn="Selection pqissuer Intermediate"  key=0     sig=0  (4036 bytes DER)
+```
+
+`sig=0` is Go reporting `UnknownSignatureAlgorithm` for the ML-DSA signatures and
+`key=0` `UnknownPublicKeyAlgorithm` for the intermediate's ML-DSA key. The client
+parsed the chain, could not identify its algorithms, and had already said so in
+the ClientHello.
+
+## What the resolver was given, printed from inside it
+
+```
+resolver.server_name               = Some("localhost")
+resolver.signature_schemes         = [ECDSA_NISTP256_SHA256]
+resolver.named_groups              = Some([X25519MLKEM768, X25519, secp256r1, ...])
+resolver.certificate_authorities   = None
+resolver.signature_algorithms_cert = <NO ACCESSOR EXISTS>
+```
+
+The resolver saw `signature_algorithms`. There is no method to ask for the other
+list, so the decision was made without it.
+
+## With client verification on, the same cell
+
+```
+client: handshake FAILED  tls: failed to verify certificate: x509: certificate signed by unknown authority
+server: handshake FAILED  received fatal alert: BadCertificate
+```
+
+**Be precise about "silent".** The connection does not succeed with a bad chain,
+and the server is not left unaware: it receives a fatal alert. The difference
+from OpenSSL is *where the decision happens*. OpenSSL declines before sending,
+because it was told what the client would accept. rustls sends, and finds out
+from the alert. Both connections fail; only one of them failed for a reason the
+server could have known in advance.
+
+## Why this matters in deployment, not just in this lab
+
+rustls 0.23.43 ships **two** server certificate resolvers:
+
+| resolver | selects on |
+|---|---|
+| `SingleCertAndKey` (`crypto/signer.rs:124`) | nothing. Its `resolve` takes `_client_hello` and returns the one key |
+| `ResolvesServerCertUsingSni` (`server/handy.rs:210`) | SNI hostname |
+
+**Neither selects on algorithm.** A dual-stack migration serves two chains to
+different clients on the *same* hostname, so SNI cannot express it. That leaves a
+custom resolver, and a custom resolver still cannot see
+`signature_algorithms_cert`, because the extension is never parsed into
+`ClientHello`.
+
+So the single-chain result above generalises: on rustls, the input that would
+distinguish a client that accepts ML-DSA-signed chains from one that does not is
+not available to any resolver, built-in or custom.
+
+## Conformance, stated fairly
+
+RFC 8446 section 4.4.2.2 makes the chain-signature constraint a SHOULD. rustls is
+conformant. Go's `crypto/tls` declines the same check in a source comment citing
+that SHOULD explicitly. This is an interoperability and operations finding, not a
+standards violation, and it should never be written up as one.
+
+## Instrument note
+
+`VerifyPeerCertificate` does not run when `RootCAs` verification fails first, so
+the raw-DER capture works only in the capture-only mode. That is why the
+verification-on run reports `NOTHING CAPTURED` while the capture-only run of the
+same cell returned two certificates. Both modes are needed to describe one cell.
