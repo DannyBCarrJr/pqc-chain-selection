@@ -1,0 +1,18 @@
+[package]
+name = "rustls-selection-server-pq"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# The rustls-post-quantum crate with the aws-lc-rs-unstable feature, which is
+# the only rustls configuration that offers ML-DSA SIGNATURES. Core rustls does
+# not, by stated maintainer policy (rustls#2417).
+[dependencies]
+rustls = { version = "=0.23.43", default-features = false, features = ["aws_lc_rs", "std", "logging"] }
+rustls-post-quantum = { version = "=0.2.4", features = ["aws-lc-rs-unstable"] }
+rustls-pemfile = "=2.2.0"
+rustls-pki-types = "=1.13.0"
+
+[[bin]]
+name = "rustls-selection-server-pq"
+path = "src/main.rs"

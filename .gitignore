@@ -24,3 +24,5 @@ build/
 gen/chains/
 runners/rustls-server-awslc/target/
 runners/rustls-server-awslc/Cargo.lock
+runners/rustls-server-pq/target/
+runners/rustls-server-pq/Cargo.lock

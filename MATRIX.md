@@ -115,77 +115,55 @@ can serve a post-quantum chain when it is not Envoy's build.
 Served the excluded chain. A resolver printout from inside `resolve` shows it
 received `signature_schemes` and has no accessor for the other list.
 
-## The finding that outranks selection
+## RETRACTED: "only OpenSSL can serve a post-quantum certificate"
 
-**Only OpenSSL served a post-quantum certificate in these runs.** Three of the
-four stacks could not load one, and they failed at different layers.
+**Retracted 2026-08-10 by self-audit, the same day it was written. It is false.**
 
-**Attribution correction, 2026-08-10.** An earlier version of this section blamed
-the library in every case. That is wrong for BoringSSL. Upstream BoringSSL at
-HEAD `e882d03` (2026-08-10) supports ML-DSA in TLS: `ssl/ssl_privkey.cc` defines
-`EVP_PKEY_ML_DSA_44/65/87`, the `SSL_SIGN_ML_DSA_*` signature algorithms, and
-lists `EVP_pkey_ml_dsa_*()` among supported keys. **The failure below belongs to
-the BoringSSL build bundled with Envoy 1.36.9, not to BoringSSL.** Go and rustls
-are library-level, and stated as such; BoringSSL is not.
+`rustls-post-quantum` 0.2.4 with the `aws-lc-rs-unstable` feature loads and
+serves the ML-DSA chain that core rustls rejects. Measured, not inferred:
 
-| library | serves an ML-DSA leaf? | error, verbatim |
+```
+loaded 2 certificate(s) from gen/chains/pq/fullchain.crt
+listening on 127.0.0.1:4457
+resolver.signature_schemes = [ML_DSA_44]
+```
+
+The handshake in that run failed with `UnsupportedCertificate`, and that failure
+is **the Go probe's**, not the server's. rustls served it correctly.
+
+### What is actually true about post-quantum certificate support
+
+| stack | serves an ML-DSA leaf? | detail |
 |---|---|---|
-| OpenSSL 3.5.5 | yes | |
-| Go 1.26 `crypto/tls` | no | `tls: failed to parse private key` (ML-DSA not wired to x509/tls; primitive exists in `crypto/internal/fips140/mldsa`) |
-| rustls 0.23.43, **both** `ring` and default `aws_lc_rs` | no | `failed to parse private key as RSA, ECDSA, or EdDSA` (rustls key-parsing layer, not the crypto provider) |
-| BoringSSL **as bundled in Envoy 1.36.9** | no | `Failed to load certificate chain from /chains/pq/fullchain.crt` |
+| OpenSSL 3.5.5 | yes | native, no flags |
+| rustls + `rustls-post-quantum` + `aws-lc-rs-unstable` | **yes** | experimental crate, unstable feature |
+| rustls core, `ring` or default `aws_lc_rs` | no | `failed to parse private key as RSA, ECDSA, or EdDSA`, rustls's own key parser |
+| Go 1.26 `crypto/tls` | no | primitive exists at `crypto/internal/fips140/mldsa`, not wired to x509/tls |
+| Envoy 1.36.9 | UNRESOLVED | see the Envoy section |
 
-Go and rustls stop at the private key, and both are library-level limits.
-Envoy's bundled BoringSSL rejects the certificate itself, which is the stricter
-failure, but upstream BoringSSL is not the reason.
+### Why the original claim was wrong, recorded so it does not recur
 
-**Provider audit, 2026-08-10.** The rustls result was first measured on the
-`ring` provider, which is not the default. rustls 0.23.43 defaults to
-`aws_lc_rs` (a BoringSSL fork that does have ML-DSA at the crypto layer) with
-`prefer-post-quantum`. Re-tested on the default provider: the ML-DSA leaf still
-fails to load, with the identical error, because the limit is in rustls's own
-key-parsing layer, which tries only RSA, ECDSA, and EdDSA regardless of
-provider. The headline selection result also reproduces on the default provider:
-`pqissuer` served, resolver still has no `signature_algorithms_cert` accessor.
-So both rustls findings hold for what people actually deploy, not only for the
-`ring` build.
+Three times today a result measured on **one configuration** of a library was
+written up as a property of **the library**: the ring provider standing for
+rustls, Envoy's bundled build standing for BoringSSL, and an unexported internal
+package standing for "Go has no ML-DSA anywhere". The generalization is the bug,
+not the measurement. Name the exact build in every claim.
 
-**So the selection question is downstream of a more basic one.** A dual-stack
-migration needs a server that can hold a post-quantum certificate, and on this
-evidence that means the OpenSSL family today. For the other three, selection
-never gets a chance to be wrong, and the one post-quantum shape they can serve
-is `pqissuer`, a classical leaf under a post-quantum CA, which is exactly the
-shape they serve to clients that excluded it.
+## The finding that survives, and is stronger for the correction
 
-### Error message quality, because an operator has to debug this
+**Even in rustls's most post-quantum-capable configuration, the extension never
+reaches the certificate resolver.**
 
-rustls names the supported algorithms and is immediately actionable. Go is
-vague. Envoy is actively misleading twice over: it reports an **unreadable**
-key file as `Failed to load incomplete private key`, which sends you hunting a
-format problem that does not exist. That cost real time in this lab, and the
-runner now stages a readable copy with a comment saying why.
+```
+resolver.signature_schemes         = [ML_DSA_44]
+resolver.signature_algorithms_cert = <NO ACCESSOR EXISTS>
+```
 
-### The Go detail
-
-`crypto/tls.LoadX509KeyPair` against each minted chain:
-
-| chain | leaf key | result |
-|---|---|---|
-| classical | EC P-256 | loaded ok |
-| pqissuer | EC P-256 | loaded ok |
-| pqleaf | ML-DSA-44 | `tls: failed to parse private key` |
-| pq | ML-DSA-44 | `tls: failed to parse private key` |
-
-That table is `crypto/tls.LoadX509KeyPair` run directly, not through Caddy.
-
-That is why Caddy rejected the dual configuration: not a Caddyfile problem, and
-not a selection problem. Its error is `tls: failed to parse private key`, raised
-while loading the `pq` chain.
-
-So for a Go server the dual-stack migration is blocked before selection is
-reached. The only post-quantum shape it can serve today is `pqissuer`, a
-classical leaf key issued by a post-quantum CA, which is precisely the shape it
-then serves to clients that have excluded it.
+The resolver understands the ML-DSA code point and can act on it. It still has
+no way to learn which signatures the client will accept **on certificates**. So
+the selection gap is not a side effect of immature post-quantum support that
+will close when support lands. It is independent of it, and it is the same in
+the `ring` build, the default `aws_lc_rs` build, and the post-quantum build.
 
 ## Fairness
 
