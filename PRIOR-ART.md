@@ -367,7 +367,9 @@ ECH-compressible extension. It is never parsed into a payload struct, so a custo
 resolver cannot honor it either. The `handshake.rs:1127` site the sweep found is
 the `CertificateRequest` direction, which is client authentication, not server
 selection. Searched the rustls issue tracker the same day for the extension name,
-open and closed: no results, which is weak evidence and not proof.
+open and closed: no results for that exact string, which is weak evidence and
+not proof. A broader search the same day DID find relevant rustls issues; see
+the PREEMPTED section above before citing this negative.
 
 ## What would kill this project
 

@@ -8,7 +8,7 @@ under `runners/evidence/`. Versions are recorded per run, never assumed.
 | `openssl s_server` | 3.5.5 (27 Jan 2026) | OpenSSL |
 | nginx | 1.31.3, `nginx:alpine` | OpenSSL 3.5.7 |
 | Caddy | built from source, go1.26.0 | Go `crypto/tls` |
-| rustls | 0.23.43 (`v/0.23.43`, 2026-07-29) | rustls; tested on both `ring` and the default `aws_lc_rs` |
+| rustls | 0.23.43 (`v/0.23.43`, 2026-07-29) | tested on three builds: `ring`, default `aws_lc_rs`, and `rustls-post-quantum` 0.2.4 + `aws-lc-rs-unstable` |
 | Envoy | 1.36.9, `envoyproxy/envoy:v1.36-latest` | BoringSSL |
 
 Not covered: Apache httpd and HAProxy. Both wrap OpenSSL and answer a different

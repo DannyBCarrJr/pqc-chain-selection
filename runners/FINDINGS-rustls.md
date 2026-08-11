@@ -66,11 +66,25 @@ proceeds, client cannot validate, and no server-side signal says why.
 
 ## Prior disclosure
 
-Searched the rustls issue tracker on 2026-08-10 for `signature_algorithms_cert`,
-open and closed. **No results.** Scope limit worth stating: that search does not
-cover pull requests, discussions, or the mailing list, and GitHub search does not
-reliably index every issue body. Absence here is weak evidence, not proof, and
-the Phase 6 re-sweep should redo it.
+**Read this together with the PREEMPTED section of `PRIOR-ART.md`, or it
+misleads.**
+
+Searched the rustls issue tracker on 2026-08-10 for the exact string
+`signature_algorithms_cert`, open and closed: **no results**. That negative is
+narrow and it is the only one claimed here.
+
+**A broader search the same day found plenty**, and it preempts a different
+claim this project nearly made. rustls#2417 has maintainers stating they will
+not add PQC signature support to core providers because it is "not well
+motivated by a reasonable threat model", gated on CA/Browser Forum ballots.
+rustls#2577 reports the ML-DSA key-loading failure thirteen months before this
+project measured it. rustls#2419 is a researcher hitting a server-side
+signature-scheme extensibility limit. None of those is about **selection between
+two configured chains**, which is why the finding above survives, but nobody
+should read "no results" here as "nothing is known about rustls and ML-DSA".
+
+Scope limit unchanged: the search does not cover pull requests, discussions, or
+the mailing list, and GitHub search does not reliably index every issue body.
 
 ## What this does not say
 
@@ -159,6 +173,22 @@ RFC 8446 section 4.4.2.2 makes the chain-signature constraint a SHOULD. rustls i
 conformant. Go's `crypto/tls` declines the same check in a source comment citing
 that SHOULD explicitly. This is an interoperability and operations finding, not a
 standards violation, and it should never be written up as one.
+
+## Confirmed across all three rustls builds, 2026-08-10
+
+The finding is not an artifact of the provider chosen. Measured on each:
+
+| build | serves an ML-DSA leaf | `signature_algorithms_cert` accessor |
+|---|---|---|
+| `ring` | no | none |
+| default `aws_lc_rs` | no | none |
+| `rustls-post-quantum` 0.2.4 + `aws-lc-rs-unstable` | **yes** | **none** |
+
+The third row is the important one. That build understands ML-DSA well enough
+that its resolver reports `signature_schemes = [ML_DSA_44]` and serves the
+chain. It still has no way to ask what the client accepts on certificates. **The
+selection gap is independent of post-quantum maturity and will not close when
+post-quantum support lands.**
 
 ## Instrument note
 
