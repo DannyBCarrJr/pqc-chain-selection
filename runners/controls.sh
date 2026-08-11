@@ -50,7 +50,7 @@ PY
 cat "$WORK/tampered.crt" "$C/classical/int.crt" > "$WORK/tampered-chain.crt"
 
 serve_openssl() { # $1 chainfile, $2 keyfile
-    openssl s_server -accept "$PORT" -naccept 1 -cert "$1" -key "$2" \
+    openssl s_server -accept "127.0.0.1:$PORT" -naccept 1 -cert "$1" -key "$2" \
         -cert_chain "$C/classical/int.crt" -tls1_3 -www > "$WORK/s.log" 2>&1 &
     SRV=$!
     for _ in $(seq 1 50); do ss -ltnH "sport = :$PORT" 2>/dev/null | grep -q . && break; sleep 0.1; done
@@ -113,7 +113,7 @@ EOF
     echo
     echo "3. REPEATABILITY: the deciding cell, five consecutive runs"
     for i in 1 2 3 4 5; do
-        openssl s_server -accept "$PORT" -naccept 1 \
+        openssl s_server -accept "127.0.0.1:$PORT" -naccept 1 \
             -cert "$C/pqissuer/leaf.crt" -key "$C/pqissuer/leaf.key" \
             -cert_chain "$C/pqissuer/int.crt" -tls1_3 -www > "$WORK/s.log" 2>&1 &
         SRV=$!

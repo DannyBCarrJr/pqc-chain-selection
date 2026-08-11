@@ -55,24 +55,37 @@ done
 
 echo "== 4. the probe patch is actually active (bug 3 class: did it really run?) =="
 if [[ -x "$REPO/probe/tlspatch/build/probe" ]]; then
-    # PROBE_SIGALGS_CERT=none must suppress ext 50; if the binary is unpatched
-    # (e.g. built with `go run`, which ignores -overlay) it will send it anyway.
+    # This check must FAIL CLOSED. Absence of extension 50 is only meaningful if
+    # a handshake actually happened; if the server never started, the log is
+    # empty and a naive `grep -q id=50` would report success. That is the exact
+    # bug class this script exists to catch, and the first version of this very
+    # check had it.
+    SCTMP="$(mktemp -d)"; trap 'rm -rf "$SCTMP"' RETURN 2>/dev/null || true
     P=4487
-    openssl s_server -accept $P -naccept 1 -cert "$REPO/gen/chains/classical/leaf.crt" \
-        -key "$REPO/gen/chains/classical/leaf.key" -tls1_3 -tlsextdebug -www >/tmp/sc.log 2>&1 &
-    s=$!
+    # Bind loopback explicitly: the default binds all interfaces and briefly
+    # exposes a server holding a private key.
+    openssl s_server -accept "127.0.0.1:$P" -naccept 1 \
+        -cert "$REPO/gen/chains/classical/leaf.crt" \
+        -key "$REPO/gen/chains/classical/leaf.key" \
+        -tls1_3 -tlsextdebug -www > "$SCTMP/sc.log" 2>&1 &
+    scpid=$!
     for _ in $(seq 1 50); do ss -ltnH "sport = :$P" 2>/dev/null | grep -q . && break; sleep 0.1; done
     PROBE_SIGALGS_CERT=none "$REPO/probe/tlspatch/build/probe" -addr "127.0.0.1:$P" >/dev/null 2>&1
-    wait $s 2>/dev/null
-    if grep -q 'id=50' /tmp/sc.log; then
+    wait $scpid 2>/dev/null
+
+    if ! grep -q 'TLS client extension' "$SCTMP/sc.log"; then
+        bad "check-4 inconclusive" "no ClientHello reached the server; cannot judge the patch. FAILING CLOSED."
+    elif grep -q 'id=50' "$SCTMP/sc.log"; then
         bad "patch inactive" "ext 50 still sent with PROBE_SIGALGS_CERT=none; rebuild with build.sh, never go run"
     else
-        ok "PROBE_SIGALGS_CERT=none suppresses extension 50"
+        ok "PROBE_SIGALGS_CERT=none suppresses extension 50 (handshake confirmed)"
     fi
-    rm -f /tmp/sc.log
+    rm -rf "$SCTMP"
 fi
 
 echo "== 5. meta-test: the checker must be able to fail =="
+# A pass count of zero would mean nothing ran at all.
+[[ "$PASS" -gt 0 ]] && ok "checks actually executed ($PASS so far)" || bad "nothing ran" "PASS==0"
 got="$(extract_len Certificate <<<'>>> TLS 1.3, Handshake [length 0001], Certificate')"
 if [[ "$got" == 8100 ]]; then bad "meta" "extractor returns a constant; every check above is meaningless"
 else ok "extractor varies with input (got $got, not a constant)"; fi

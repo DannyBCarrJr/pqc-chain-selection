@@ -27,7 +27,7 @@ mkdir -p "$EVID"
 cell() { # name, env-spec
     local name="$1" spec="$2" raw="$EVID/$1.raw"
 
-    openssl s_server -accept "$PORT" -naccept 1 \
+    openssl s_server -accept "127.0.0.1:$PORT" -naccept 1 \
         -cert "$SMOKE/certs/rsa.crt" -key "$SMOKE/certs/rsa.key" \
         -dcert "$SMOKE/certs/ec.crt" -dkey "$SMOKE/certs/ec.key" \
         -tls1_3 -tlsextdebug -www > "$raw" 2>&1 &

@@ -31,7 +31,7 @@ cell() {
     local label="$1" sa="$2" sac="$3"
     local raw="$EVID/$label.server" out="$EVID/$label.probe"
 
-    openssl s_server -accept "$PORT" -naccept 1 \
+    openssl s_server -accept "127.0.0.1:$PORT" -naccept 1 \
         -cert "$C/classical/leaf.crt" -key "$C/classical/leaf.key" -cert_chain "$C/classical/int.crt" \
         -dcert "$C/pq/leaf.crt"       -dkey "$C/pq/leaf.key"       -dcert_chain "$C/pq/int.crt" \
         -tls1_3 -tlsextdebug -msg -www > "$raw" 2>&1 &

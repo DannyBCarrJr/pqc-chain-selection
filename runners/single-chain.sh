@@ -42,7 +42,7 @@ cell() {
     local tag="$chain-${sa//,/+}-${sac//,/+}"
     local raw="$EVID/$tag.server" out="$EVID/$tag.probe"
 
-    openssl s_server -accept "$PORT" -naccept 1 \
+    openssl s_server -accept "127.0.0.1:$PORT" -naccept 1 \
         -cert "$C/$chain/leaf.crt" -key "$C/$chain/leaf.key" -cert_chain "$C/$chain/int.crt" \
         -tls1_3 -msg -www > "$raw" 2>&1 &
     local srv=$!

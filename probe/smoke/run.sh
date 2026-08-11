@@ -28,7 +28,7 @@ mkdir -p "$EVID"
 } | redact > "$EVID/versions.txt"
 
 openssl s_server \
-    -accept "$PORT" -naccept 1 \
+    -accept "127.0.0.1:$PORT" -naccept 1 \
     -cert "$CERTS/rsa.crt"  -key "$CERTS/rsa.key" \
     -dcert "$CERTS/ec.crt"  -dkey "$CERTS/ec.key" \
     -tls1_3 -tlsextdebug -no_dhe -www \
