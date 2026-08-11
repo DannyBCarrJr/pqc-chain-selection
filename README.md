@@ -31,4 +31,10 @@ Not a scan of the deployed web. Dubey and Varshney (arXiv:2606.16473) found 0%
 hybrid post-quantum certificate adoption across 32,011 domains in 2026, so there
 is no fleet to survey. This measures server software on a bench.
 
+Not complete on Envoy. Envoy appears on the single-chain cells only. Whether it
+can hold a classical and a post-quantum chain at the same time went unresolved
+when two of the diagnostic harnesses used to answer it turned out to be buggy,
+and v1 claims nothing about it in either direction. Settling that takes a
+BoringSSL harness, not more YAML.
+
 Part of Carr Digital LLC. Workspace map: ~/Workspace/AGENTS.md

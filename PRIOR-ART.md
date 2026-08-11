@@ -257,20 +257,57 @@ correct input metadata with plausible-looking fabrications and present them as
 the verified layer.** Crossref settles DOI, ISBN, authors, and pagination for
 free. Use it before accepting any secondhand bibliographic record.
 
-**draft-yusef-tls-pqt-dual-certs-01**, 17 December 2025, by Shekh-Yusef (Ciena),
-Tschofenig (H-BRS), Ounsworth (Entrust), Reddy (Nokia), and Rosomakho (Zscaler).
-https://www.ietf.org/archive/id/draft-yusef-tls-pqt-dual-certs-01.html
+**draft-yusef-tls-pqt-dual-certs-03**, 3 July 2026, expires 4 January 2027, by
+Shekh-Yusef (Ciena), Reddy (Nokia), Tschofenig (UniBw M.), Ounsworth (Cryptic
+Forest), and Rosomakho (Zscaler).
+https://www.ietf.org/archive/id/draft-yusef-tls-pqt-dual-certs-03.txt
 
-Public, free, and adjacent to the Springer chapter without being proven
-identical: the draft carries two independent certificates producing one
-`Certificate` and `CertificateVerify`, while the chapter uses X.509 alternative
-key extensions. Read on 2026-08-10, it proposes an additive mechanism, reports
-no measurement of existing server selection, and cites no prior measurement
-study of certificate selection. That reading came from a page summarizer rather
-than a local grep, so it is Reported and weakly held.
+An individual submission, not working-group adopted. The filename says so: an
+adopted draft would be `draft-ietf-tls-`. Four revisions exist, 00 through 03.
 
-Five vendors built a new TLS extension because phased migration across mixed
-peers is hard. That is this project's premise arriving as support.
+**Re-read at `-03` on 2026-08-11 by downloading the text and grepping it
+locally.** The entry here previously described `-01` and was two revisions
+stale. Read the current revision before citing this, because the mechanism
+changed.
+
+**What changed between `-01` and `-03`.** The `dual_signature_algorithms`
+extension is gone. `-03` carries the negotiation in new SignatureScheme code
+points inside the existing `signature_algorithms` extension instead (Section
+5.1). The document also shrank from 58,381 to 44,974 bytes. The outcome is
+unchanged: two independent certificates producing one `Certificate` and one
+`CertificateVerify`, which remains adjacent to the Springer chapter without
+being proven identical. The chapter is still UNREAD, and the belief that it uses
+X.509 alternative key extensions rests on its abstract, not its text.
+
+**`-03` makes `signature_algorithms_cert` load-bearing, which is why this
+project matters to it.** Section 5.2:
+
+> when either chain contains CA-issued certificates, the peer MUST advertise the
+> acceptable certificate signature algorithms in signature_algorithms_cert
+
+The authors note one limitation ten lines later, that the extension "cannot
+enforce this, as it is a single list that does not distinguish the two chains".
+They do not consider the possibility that an implementation ignores the
+extension outright. This project's measurement says three of five stacks do
+exactly that. **That is a gap in the design's deployability, not a preemption of
+the measurement.**
+
+**Verified, by grep on the downloaded `-03` text rather than a page summarizer:
+it proposes and does not measure.** Occurrences of OpenSSL, nginx, rustls,
+Envoy, BoringSSL, "measure", and "measured": zero for every one. It cites no
+prior measurement study of certificate selection. This replaces the earlier
+Reported-and-weakly-held assessment.
+
+**Do not cite the `-01` appendix, even though it is tempting.** `-01` carried an
+"Open Design Issues" appendix stating that `signature_algorithms_cert` is
+"extremely rarely used in the wild" and that one design option has "bad
+alignment with TLS implementations in the wild". Five vendors asserting this
+project's premise without measuring it. `-03` deleted that appendix. Quoting a
+withdrawn statement from a superseded revision to support our own framing is
+exactly what an audit of this file should catch.
+
+Five vendors built a new TLS authentication mechanism because phased migration
+across mixed peers is hard. That is this project's premise arriving as support.
 
 **IETF Hackathon `pqc-certificates`** is provider-to-provider artifact interop,
 already logged in `pqc-cert-matrix/PRIOR-ART.md` as not a handshake matrix. Same

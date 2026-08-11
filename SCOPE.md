@@ -137,7 +137,7 @@ HAProxy are both OpenSSL and answer a different question.
 |---|---|---|
 | nginx | OpenSSL 3.5 | Largest install base, chain check unreachable per source |
 | Caddy | Go `crypto/tls` | Documents that it does not check chain algorithms |
-| Envoy | BoringSSL | Selects first usable credential, so config order decides |
+| Envoy | BoringSSL | Documented first-usable-credential selection, unverified here |
 | rustls proxy | rustls | **The unknown.** Selection path never traced |
 | `openssl s_server` | OpenSSL | Control, and the path #32221 already broke |
 
