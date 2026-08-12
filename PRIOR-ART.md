@@ -36,6 +36,12 @@ Two sentences travel with that claim permanently, or they become the rebuttal.
 2. **Cite OpenSSL #32221 in the same paragraph that describes the failure mode,
    never in a footnote.** A reviewer who finds it afterward will assume we did
    not look.
+3. **Never present the two-chain setup as novel, and never present OpenSSL's
+   compliance as a discovery.** Frauenschläger and Mottok call multiple-chain
+   deployment selected by `signature_algorithms_cert` "the simplest and already
+   practically used approach", and name OpenSSL as already supporting it. Both
+   points cite that chapter. The measurement is ours; the configuration and the
+   OpenSSL result are not. Added 2026-08-12 on reading the full text.
 
 ## PREEMPTED, cite instead of claim
 
@@ -221,25 +227,73 @@ and 0000-0002-7727-2448.**
 Metadata verified against the Crossref API on 2026-08-10, not against a search
 summary. See the fabrication note below for why that distinction is written down.
 
-**Status: UNREAD, paywalled at $30.** Full-text request submitted through
-ResearchGate on 2026-08-10. Springer gives LNCS authors a free SharedIt link, so
-direct author contact is the fallback.
+**Status: READ IN FULL, 2026-08-12. The Phase 0 gate is closed.** Tobias
+Frauenschläger sent a private author copy by email after the ResearchGate request
+of 2026-08-10, and asked to see our results when they are ready. 20 pages, 8,183
+words of extracted text.
 
-**Assessed as a citation rather than a preemption, and here is the reasoning so a
-reviewer can check it.** The published abstract describes a transition mechanism
-using certificates that embed both a traditional and a post-quantum public key
-and signature, plus a new handshake negotiation mechanism. The motivation is
-stated as OT and IoT: long device lifetimes, limited update capability, and
-backward compatibility with legacy devices. The same group's prior work is
-"Fully Hybrid TLSv1.3 in WolfSSL on Cortex-M4", so constrained-device
-benchmarking in wolfSSL is their established method. A design proposal evaluated
-on a microcontroller is a different contribution from a cross-implementation
-measurement of how nginx, Envoy, and rustls choose among configured chains.
+**The copy is private and does not enter this repository, or any other.** It is
+not committed, not redistributed, and not quoted at length in anything public. The
+citation above is to the published DOI, which is what a reader can reach. Anything
+public cites the DOI and paraphrases.
 
-**This assessment is Reported, from the abstract and the group's publication
-record. It is not Verified.** If the full text turns out to contain an
-interoperability study across server implementations, this project narrows. Read
-it before Phase 6 without exception.
+**The 2026-08-10 prediction held. This is a citation, not a preemption of the core
+finding.** Verified against the full text rather than the abstract:
+
+- The contributions are a TLS negotiation mechanism for dual algorithm
+  certificates (C1), implementations of it (C2), and a performance evaluation
+  (C3). A dual algorithm certificate carries both algorithms in one certificate,
+  which is a different object from two separate chains.
+- Implemented in **WolfSSL and OpenSSL only**, and evaluated on a
+  resource-constrained microcontroller.
+- **nginx, Caddy, rustls, and Envoy do not appear anywhere in the paper.** Four of
+  the five stacks this project measures are absent, and so is any measurement of
+  which chain a server sends when it holds two.
+- Nothing in it addresses whether client preference order or server configuration
+  order decides the chain.
+
+**Two framing points are now preempted, and both must be demoted to Reported.**
+This is the part that costs us something, so it is written down plainly:
+
+1. **The setup is not novel.** Section 2.3 calls multiple-chain deployment "the
+   simplest and already practically used approach", with the chain selected "based
+   on the lists within the signature_algorithms and signature_algorithms_cert
+   extensions". So this project measures a configuration that the literature
+   already treats as established practice. It may not be presented as new.
+2. **"OpenSSL honors signature_algorithms_cert" is prior art, and cites here.**
+   Section 2.3 states that "Some TLS implementations already support this approach
+   when provided with multiple chains (e. g., OpenSSL)." That is the OpenSSL half
+   of this project's result, stated qualitatively two years earlier. Cite it.
+
+**What survives, and it is the larger half.** The paper's "Some" is doing
+unmeasured work: it implies support is uneven, names no implementation that lacks
+it, and measures nothing. Its only stated reason for uneven support is that "many
+resource-constrained embedded devices do not support multiple chain handling",
+which is a claim about embedded devices, not about mainstream server stacks. That
+Caddy, rustls, and Envoy serve a chain the client excluded is not in this paper,
+was not predicted by it, and is the opposite of what a reader would infer from
+"e. g., OpenSSL" plus an embedded-device caveat. Measuring which stacks fail, and
+that the failure is not confined to constrained devices, remains this project's
+contribution.
+
+**Two new references surfaced that this file has never assessed.** Both are cited
+by Section 2.3 as the sources for "more detailed descriptions of the different
+approaches", which is exactly the territory of this project:
+
+- **[37] Scheible, P., "Quantum Resistant Authenticated Key Exchange for OPC UA
+  using Hybrid X.509 Certificates", master's thesis, Universitat Politècnica de
+  Catalunya, April 2020.** https://upcommons.upc.edu/handle/2117/191775
+- **[26] Lytle, J., "Performance of Hybrid Signatures for Public Key
+  Infrastructure Certificates", master's thesis, Naval Postgraduate School, June
+  2021.** https://apps.dtic.mil/sti/citations/trecms/AD1204814
+
+Both are open access, so neither is gated the way this chapter was. Judged
+low risk on their titles, because one is scoped to OPC UA and the other to
+signature performance, and **that judgement is Proposed, not Verified.** Neither
+has been read. Do not let a title stand in for a full text in this file again.
+
+Paul et al. and draft-yusef-tls-pqt-dual-certs, the two references from this
+chapter that carried real preemption risk, are already assessed below.
 
 ### Fabrication note, recorded because it will happen again
 
