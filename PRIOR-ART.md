@@ -54,6 +54,26 @@ Two sentences travel with that claim permanently, or they become the rebuttal.
    Reported, and note the sourcing trap: this reached us through a postquantum.com
    summary. Cite DigiCert's own report, not the summary. Two facts in this corpus
    were fabricated by summarizers.
+
+   **A second, smaller number points the same way and should be handled the same
+   way. Added 2026-08-12.** An IETF 126 PLANTS talk by Nalini Elkins
+   (`slides-126-plants-measuring-deployment-characteristics-of-pq-tls-authentication-mechanisms-00.pdf`,
+   2026-07-19, read in full) has one measured slide, "Internet Sites (top 27)",
+   reporting observed algorithm sets as RSA 14 (51.9%), EC 9 (33.3%), and **EC +
+   RSA 4 (14.8%)**.
+
+   That last figure is the classical analogue of the configuration this project
+   measures: a site presenting two algorithm families rather than one. It does
+   **not** contradict the 0% above, because that is specifically about *hybrid
+   post-quantum* chains and this is EC and RSA, both classical. Used carefully it
+   helps, because it is independent support for Frauenschläger's "already
+   practically used": multi-algorithm serving is real practice, and the
+   post-quantum version of it is what has not deployed.
+
+   Caveats that must travel with it if it is ever cited: n is 27, no methodology is
+   stated, and "observed algorithm set" is not defined as two configured chains.
+   It is a conference slide, not a paper. Treat it as directional, never as a
+   population estimate.
 2. **Cite OpenSSL #32221 in the same paragraph that describes the failure mode,
    never in a footnote.** A reviewer who finds it afterward will assume we did
    not look.
