@@ -263,7 +263,9 @@ This is the part that costs us something, so it is written down plainly:
 2. **"OpenSSL honors signature_algorithms_cert" is prior art, and cites here.**
    Section 2.3 states that "Some TLS implementations already support this approach
    when provided with multiple chains (e. g., OpenSSL)." That is the OpenSSL half
-   of this project's result, stated qualitatively two years earlier. Cite it.
+   of this project's result, stated qualitatively and published before this
+   project began. Cite it. (The chapter's PDF was typeset 2025-07-30 and appeared
+   online 2026-05-01; this project started 2026-08-10.)
 
 **What survives, and it is the larger half.** The paper's "Some" is doing
 unmeasured work: it implies support is uneven, names no implementation that lacks
