@@ -309,6 +309,57 @@ given date. It does not support any statement about what their product detects
 internally, and vendor pages go stale, so re-read it before publication rather
 than citing this line.
 
+### Why no scanner reports this: the request is visible and the response is not. Added 2026-08-12.
+
+This is the mechanism behind every empty search in this file, and it is a better
+answer to "why has nobody found this?" than any number of negative results.
+
+**TLS 1.3 puts the client's constraint in the clear and encrypts the server's
+answer.** Both halves come from RFC 8446, fetched and grepped on 2026-08-12 rather
+than recalled:
+
+- `signature_algorithms_cert` is a **ClientHello** extension. The extension table
+  at RFC 8446 section 4.2 lists it as `signature_algorithms_cert (RFC 8446) | CH,
+  CR`, and Figure 1 shows `ClientHello` with no braces around it.
+- The **Certificate** message is encrypted. Figure 1 writes it `{Certificate*}`,
+  the legend defines `{}` as "messages protected using keys derived from a
+  [sender]_handshake_traffic_secret", and section 4.4 states it in prose:
+  Certificate, CertificateVerify, and Finished "are encrypted under keys derived
+  from the [sender]_handshake_traffic_secret."
+
+So a passive on-path observer reads exactly which certificate algorithms the client
+was willing to accept, and cannot read which chain came back. **The constraint is
+observable and compliance with it is not.** The failure this project measures,
+a server returning a chain the client excluded, is therefore invisible to passive
+observation by construction.
+
+**State the limits of that, because it is not "undetectable".** Three parties can
+see it, and the claim must not imply otherwise:
+
+1. **An active client**, which both sets the constraint and inspects what it
+   receives. That is this project's method.
+2. **Anyone holding the handshake keys**, including a TLS-terminating interception
+   proxy or an endpoint agent. An enterprise doing TLS inspection could see this
+   today.
+3. **The server operator**, who could instrument which chain their own software
+   selected.
+
+What none of those is: a fleet-scale passive scan. That is why the DigiCert-style
+survey and the passive-telemetry tooling both miss it, and why the population
+argument in travelling sentence 1 above holds. It is also the honest reason nobody
+has published this, and a far more respectful account of the field than implying
+nobody thought to look.
+
+**Stamps.** The RFC 8446 quotations and the extension-table row are Reported from
+the RFC text. That an active client handshake does reveal the served chain is
+Verified here, across five stacks. That this asymmetry is *why* the behavior went
+unreported is **Proposed**: it is an argument from the mechanism, and no author has
+said this is what stopped them.
+
+Cross-reference: the same mechanism, developed for the inventory-tool case, is in
+`pqc-cert-matrix` under "Why the parse-based path is structural rather than lazy".
+Keep the two in step if either is edited.
+
 ## Adjacent work that proposes rather than measures
 
 **Frauenschläger, T. and Mottok, J., "Using Dual Algorithm Certificates in TLS:
