@@ -287,10 +287,36 @@ approaches", which is exactly the territory of this project:
   Infrastructure Certificates", master's thesis, Naval Postgraduate School, June
   2021.** https://apps.dtic.mil/sti/citations/trecms/AD1204814
 
-Both are open access, so neither is gated the way this chapter was. Judged
-low risk on their titles, because one is scoped to OPC UA and the other to
-signature performance, and **that judgement is Proposed, not Verified.** Neither
-has been read. Do not let a title stand in for a full text in this file again.
+**Both read in full on 2026-08-12. Neither is a preemption, and this is now
+Verified rather than judged from a title.**
+
+- **Scheible, 155 pages, 40,154 words of extracted text.** Proposes two
+  quantum-resistant variants of the OPC UA authenticated key establishment
+  (Kyber plus RSA, with Falcon or Dilithium for signatures), implemented against
+  open62541 and mbedTLS. **Zero occurrences of `signature_algorithms_cert`,
+  "multiple chains", or "chain selection".** Only mbedTLS and OpenSSL are named;
+  nginx, Caddy, rustls, and Envoy never appear. Its one overlapping passage is
+  Section 3.1.1, a taxonomy of four hybrid X.509 designs whose "Dual
+  Certificates" entry notes that systems "have to know when to use only a
+  conventional certificate for legacy systems and when they have to use both."
+  That is design-space analysis of a certificate format, not a measurement of
+  what a server sends, and it is about OPC UA rather than TLS.
+- **Lytle, 148 pages, 38,793 words.** Claims "the first test implementation of
+  true hybrid signature algorithms", evaluated as standalone cryptographic
+  operations and then integrated into X.509 and TLS 1.3 for performance. **Only
+  OpenSSL (25 mentions) and liboqs (5) appear**; none of the other four stacks
+  do. It does discuss `signature_algorithms` and `signature_algorithms_cert`, but
+  strictly as RFC 8446 background on page 67: which message each extension
+  governs, and that the server must abort if they are absent. It never addresses
+  choosing between two configured chains.
+
+Neither thesis measures more than one implementation, so neither touches the
+"across more than one implementation" scope of the verbatim claim. Both were
+downloaded and grepped rather than assessed from a search summary, which on this
+pass mattered twice: DTIC serves 403 to non-browser clients on every path
+tried, and the Lytle full text had to be reached through the NPS DSpace REST API
+(handle 10945/72090, item 3b15b1b7-35bb-4eab-9154-6f1a9c34dd8b). A search
+summary offered a confident description of its scope; it was not used.
 
 Paul et al. and draft-yusef-tls-pqt-dual-certs, the two references from this
 chapter that carried real preemption risk, are already assessed below.
