@@ -33,6 +33,27 @@ Two sentences travel with that claim permanently, or they become the rebuttal.
    post-quantum certificate adoption. There is no deployed dual-chain population
    to survey, so any phrasing that implies a fleet scan promises something this
    project cannot deliver.
+
+   **Have the answer to the survey rebuttal ready, because it exists and it is
+   public. Added 2026-08-12.** DigiCert's 2026 Quantum Readiness Outlook, a survey
+   of 1,001 IT and security decision-makers across the US, UK, and Australia
+   conducted by Propeller Insights in May 2026, reports that "Only 7% report that
+   more than half of their digital certificates currently use quantum-safe or
+   hybrid cryptography." A reviewer holding that number will read the 0% above as
+   wrong.
+
+   Both can be true, and the reconciliation is the interesting part rather than a
+   dodge. The 7% is **self-reported**, covers an organization's whole certificate
+   estate **including private and internal PKI**, and uses "quantum-safe or hybrid"
+   without defining it. The 0% is **measured**, and scoped to hybrid post-quantum
+   certificates on public web domains. Different populations, different methods,
+   and one of them is a vendor surveying its own market. Neither number is evidence
+   against the other, and saying so plainly is stronger than citing only the one
+   that helps.
+
+   Reported, and note the sourcing trap: this reached us through a postquantum.com
+   summary. Cite DigiCert's own report, not the summary. Two facts in this corpus
+   were fabricated by summarizers.
 2. **Cite OpenSSL #32221 in the same paragraph that describes the failure mode,
    never in a footnote.** A reviewer who finds it afterward will assume we did
    not look.
@@ -213,6 +234,60 @@ selection", and "quantum" on a full-text grep.
 
 A citable admission from the incumbent is stronger than any number of empty
 searches. Lead with it.
+
+**The newest IETF Working Group chartered on post-quantum signature cost in Web
+PKI does not take this up either. Added 2026-08-12, and the precision below is
+deliberate.**
+
+**IETF PLANTS WG**, "PKI, Logs, And Tree Signatures", active, group record
+timestamped 2026-04-02. Chairs Russ Housley and Thom Wiggers, AD Deb Cooley.
+Charter goal, verbatim from the datatracker group API:
+
+> The goal of the PLANTS Working Group is to trim the costs of large post-quantum
+> signatures on PKIs with Certificate Transparency (CT; RFC 6962 and RFC 9162),
+> when used in interactive protocols like TLS (RFC 8446).
+
+Its scope statement, also verbatim:
+
+> The PLANTS Working Group's scope is to explore mechanisms for CAs and
+> transparency ecosystems to certify key/identifier bindings in a publicly
+> monitor-able way. Alternate trust models and changes to how TLS uses the
+> end-entity key are not in scope for the Working Group.
+
+**State this accurately or not at all.** That exclusion is about *changing* how
+TLS uses the end-entity key. It is **not** a statement that server-side chain
+selection is out of scope, and it must never be quoted as though it were. What is
+defensible is the weaker and still useful reading: a working group chartered in
+2026 specifically to reduce post-quantum signature cost in CT-based PKI with TLS
+has deliverables about certifying bindings compactly, and **which chain a server
+sends when it holds more than one is not among them**, neither as a deliverable
+nor as a stated exclusion. It is simply not addressed.
+
+That is a weaker claim than the TLS-Anvil annotation, which is an explicit
+admission. Lead with TLS-Anvil and use this as support, not the reverse. The
+2026-08-10 retraction in this repo happened by reading one measurement as a
+statement about a whole library; quoting this charter as "PLANTS says chain
+selection is out of scope" would be the same error in a new costume.
+
+Milestones to re-check before Phase 6, because either could change this: an
+informational architecture document due **2026-07-31**, already passed, and a
+standards document due **2026-11-30**. The WG may also "define extensions to ACME
+and TLS to integrate its certificate constructions", which is the clause most
+likely to touch this project's subject if it ever does.
+
+**No PQC readiness tool found so far checks this either, and one now names the
+gap by omission.** Wiz's PQC readiness offering inventories by code scanning, IaC
+and host configuration, cloud service inspection, and certificate and SSH key
+parsing, and it publishes no limitations. It ships a separate PQC Tester that does
+perform a live check, described as scanning "your domain ... to see if your server
+supports PQC key exchanges". Key exchange, not certificates, and not which chain
+is served. Reported, from the vendor page read 2026-08-12.
+
+Be careful with this one too. It supports "the tooling measures key exchange
+rather than chain behavior", which is a claim about published capability on a
+given date. It does not support any statement about what their product detects
+internally, and vendor pages go stale, so re-read it before publication rather
+than citing this line.
 
 ## Adjacent work that proposes rather than measures
 
