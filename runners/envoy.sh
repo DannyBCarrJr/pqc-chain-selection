@@ -10,7 +10,7 @@
 # client.
 #
 # Live config is written outside evidence/ and only a redacted copy is kept,
-# because it holds absolute paths. That is the standing rule in AGENTS.md, and
+# because it holds absolute paths. That is the standing rule in CONTRIBUTING.md, and
 # the caddy runner learned it the hard way.
 set -euo pipefail
 

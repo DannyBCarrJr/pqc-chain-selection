@@ -28,7 +28,7 @@ mkdir -p "$EVID"
 
 # The live Caddyfile holds absolute paths, so it is written OUTSIDE evidence/
 # and only a redacted copy is kept. Same for caddy's own log. Redaction happens
-# at collection, which is the standing rule in AGENTS.md.
+# at collection, which is the standing rule in CONTRIBUTING.md.
 WORK="$(mktemp -d)"
 PID=""
 stop() { [[ -n "$PID" ]] && kill "$PID" 2>/dev/null; wait "$PID" 2>/dev/null || true; PID=""; }

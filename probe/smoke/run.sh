@@ -6,7 +6,7 @@
 # captures the server-side extension dump plus the probe output as evidence.
 #
 # Every captured path is redacted at collection time, not afterward. That is a
-# standing rule in AGENTS.md and it exists because the pqc-cert-matrix flip
+# standing rule in CONTRIBUTING.md and it exists because the pqc-cert-matrix flip
 # found the checkout path in 25 evidence files and in git history.
 set -euo pipefail
 

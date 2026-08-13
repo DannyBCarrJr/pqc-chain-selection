@@ -8,8 +8,6 @@ desktop.ini
 *~
 .vscode/
 .idea/
-# Local agent settings (per-machine, not shared)
-.claude/settings.local.json
 # Secrets — never commit
 .env
 *.pem

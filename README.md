@@ -13,15 +13,15 @@ behave as though it does. Three do not, correctly.
 Nothing measured here is a standards violation, and this repo will not describe it
 as one.
 
-**Status: pre-publication, Phase 6.** All measurements are in and re-run from a
-clean build. Phase 0's prior-art gate closed on 2026-08-12, when the Springer
-chapter that could have stopped this project (10.1007/978-3-032-16089-8_30) was
-read in full and turned out to propose a mechanism rather than measure chain
-selection. It cost two framing claims, both recorded in `PRIOR-ART.md`.
+**Released: v1.0.0, MIT.** All measurements are in and re-run from a clean build.
+Results per cell are in `MATRIX.md`, limitations and corrections in `CHANGELOG.md`,
+and `PRIOR-ART.md` governs every claim published from here. `CONTRIBUTING.md` has
+the standards a patch has to meet.
 
-Still private. The remaining work is packaging, not measurement. `SCOPE.md` has
-the phases, `PRIOR-ART.md` governs every sentence published from here, and
-`PREPUBLICATION-AUDIT.md` records the leak scan.
+The prior-art gate that could have stopped this project closed on 2026-08-12, when
+the Springer chapter (10.1007/978-3-032-16089-8_30) turned out to propose a mechanism
+rather than measure chain selection. It cost two framing claims, both recorded in
+`PRIOR-ART.md` and credited in this file.
 
 ## The question
 
@@ -192,4 +192,4 @@ fail is not a check. Three claims were retracted from this project by self-audit
 on 2026-08-10, and one server result is still recorded as unresolved. Both facts
 are in the repo on purpose.
 
-Part of Carr Digital LLC. Workspace map: ~/Workspace/AGENTS.md
+Part of Carr Digital LLC.

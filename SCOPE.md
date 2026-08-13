@@ -26,7 +26,7 @@ Every cell in this matrix is a script plus captured output, or it does not ship.
 Half a day. `PRIOR-ART.md` is seeded. Remaining work is the honest logging of
 open items and one decision.
 
-Deliverable: this file, `PRIOR-ART.md`, and a populated `AGENTS.md`.
+Deliverable: this file, `PRIOR-ART.md`, and the contributor standards now in `CONTRIBUTING.md`.
 
 **Gate:** does the claim survive what we already know? If the Springer chapter
 (10.1007/978-3-032-16089-8_30) surfaces as a measurement rather than a mechanism

@@ -60,12 +60,38 @@ generators recreate it.
 
 ## Two accepted, and why
 
-- **`~/Workspace/AGENTS.md` and `~/.rocky/steering/`** appear in `README.md` and
-  `AGENTS.md`. These are tilde-relative, so they leak no username, and the
-  identical two lines are already public in `pqc-cert-matrix`,
-  `pqc-chain-budget`, and `post-quantum-measured-lab`. Changing this repo alone
-  would create inconsistency across four repos to no benefit. Either it is fine
-  in all four or it should be fixed in all four, and that is a separate decision.
+- **~~Internal path references, accepted.~~ REVERSED AND REMOVED, 2026-08-12,
+  before release.** Two lines pointed at the author's local workspace map and a
+  personal agent-steering directory. They leaked no username, being tilde-relative,
+  and the same lines were already public in three sibling repos, so the first pass
+  accepted them for consistency.
+
+  That was the wrong call for two reasons. They are dead links to any reader, and a
+  pointer to an agent-steering directory is an AI-tooling footprint in a repository
+  meant to read as the author's own work. Both are gone:
+
+  - `README.md`'s footer is now just "Part of Carr Digital LLC."
+  - The two local agent-context files, one of them a vendor-named symlink to the
+    other, are **untracked**. Their content was genuine methodology rather than tool
+    configuration, so it is rewritten as `CONTRIBUTING.md` in the author's voice
+    stating the same standards. Both files stay on disk for local tooling and are
+    excluded through `.git/info/exclude`, which is local and never committed, so the
+    protection survives without the footprint.
+  - The tracked `.gitignore` entry for a vendor-named local settings directory moved
+    to `.git/info/exclude` for the same reason. Nothing is committable now that was
+    not committable before.
+  - **Vendor and tool names are deliberately not written out in this file.** An
+    earlier draft named them while documenting their removal, which would have
+    published the footprint inside the record certifying it was gone. Same mistake
+    this file already caught once with an employer-name scan. The exact strings live
+    in the scan script on the build machine.
+  - Script comments in `runners/envoy.sh`, `runners/caddy.sh`, and
+    `probe/smoke/run.sh` that cited the old file now cite `CONTRIBUTING.md`.
+
+  **The three sibling public repos still carry the same two lines and the same
+  tracked `AGENTS.md`.** That is now a known inconsistency and the follow-up is
+  recorded rather than assumed: apply the same treatment to `pqc-cert-matrix`,
+  `pqc-chain-budget`, and `post-quantum-measured-lab`.
 - **The harness redacted correctly at collection time.** Zero absolute paths in
   99 files is the direct result of `SCOPE.md` requiring redaction from Phase 4
   onward, after cert-matrix. The instruction worked, and this table is the
