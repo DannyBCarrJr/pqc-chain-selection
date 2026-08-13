@@ -79,9 +79,12 @@ The audit is the gate this file closes. These remain, per `SCOPE.md` Phase 6:
 - [x] MIT `LICENSE`
 - [x] `CITATION.cff`, with DOI, url, version, and date deliberately absent until
       the release exists. A placeholder DOI is a fabricated identifier.
-- [ ] `README.md` still describes the harness in future tense ("What this will
-      contain") though it is built. Needs a rewrite to past tense with the real
-      findings.
+- [x] `README.md` rewritten to past tense with the findings, 2026-08-12. The old
+      version also promised a `results/` directory that was never built, and
+      omitted the byte counts, the rustls root cause, and every scope limit. Style
+      and claim checks run against it: zero em or en dashes, zero curly quotes,
+      zero banned vocabulary, and the surviving instances of "first" and "only" are
+      a novelty disclaimer, a credit to prior work, and three uses meaning "sole".
 - [ ] Zenodo DOI, which requires the first GitHub release
 - [ ] Upstream issues against the stacks that serve an excluded chain
 - [ ] The article, which `SCOPE.md` requires be written **after** the matrix is
