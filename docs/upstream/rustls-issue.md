@@ -1,15 +1,79 @@
 # Upstream report: rustls
 
-**Status: final, ready to file. Not yet filed.**
+**Status: the issue must be written by Danny, in his own words. Not by an assistant.**
+
+`rustls/CONTRIBUTING.md` carries an AI policy and it is explicit: "AI should not be used to
+generate comments when communicating with maintainers ... Comments that are believed to be
+written by AI may be hidden without notice. If you are opening an issue, you should be able
+to describe the problem in your own words." Posting a drafted issue would break the host
+project's stated policy in the one community whose behaviour this project documents. The
+facts below are verified and are his to draw on; the sentences have to be his.
+
+Use their **feature request template** (`.github/ISSUE_TEMPLATE/feature_request.md`), which
+has a checklist plus four sections: the problem, the solution, alternatives considered, and
+additional context. Discussions are not enabled, so an issue is the right venue.
+
+## Tracker search, 2026-08-12: the checklist item is honestly tickable
+
+No prior request exists for exposing `signature_algorithms_cert`. The only hit on that
+string is #2420, about inverting `SignatureScheme::supported_in_tls13`, which is unrelated.
+
+**Two closed issues matter a great deal, and both are precedents rather than blockers.**
+
+**#2235, "Support `certificate_authorities` extension in ClientHello"** (Nov 2024, closed
+in three weeks, landed). This is the accessor already on `ClientHello` and it is the
+strongest argument available. Read how it went:
+
+- `ctz` pushed back immediately on practicality: the extension means about 15KB in the
+  ClientHello for the WebPKI, "pretty impractical".
+- The requester did not argue the point. They narrowed the ask: "I'm not proposing for
+  rustls to start sending this extension by default. The proposal is to let custom cert
+  verifiers and cert resolvers propose/check this extension."
+- `ctz`: "Ah, yes that would be acceptable ... so adding it for server auth seems
+  reasonable."
+- Requester: "I'll work on the PR then." It landed.
+
+**#2484, "Need more data in the ClientHello struct to choose best cert/key for
+connection"** (June 2025). Someone asked for a missing field needed for certificate
+selection, and `named_groups` is now one of the eight fields. Same category of ask, and it
+succeeded. The thread also shows the maintainers' opening moves: `djc` asked "Can you be
+more explicit about what exactly it is that you're trying to achieve concretely?" and `ctz`
+asked "Is that a real use case? If so, why are you doing that to yourself?" before
+accepting it with a caution that the logic is complex.
+
+Worth knowing: in that same thread `ctz` discusses walking chains and reasoning about
+"the certificate it names in its `certificate_authorities` extension". Chain selection is
+already territory he has thought about.
+
+## What that means for how this gets written
+
+1. **Lead with a concrete operator scenario, not with the RFC.** Both threads open with a
+   maintainer asking what you are actually trying to do. Answer that in the first
+   paragraph: an operator holding a classical chain and a post-quantum chain during a
+   migration, with clients that cannot validate post-quantum certificate signatures.
+2. **Narrow the ask before anyone has to narrow it for you.** Expose it to custom
+   resolvers; do not change any rustls default. That single move is what turned #2235 from
+   a pushback into an approval.
+3. **Bring the measurement, because it answers "is that a real use case?" better than an
+   assertion.** Five stacks, three provider builds, published and archived.
+4. **Pre-empt the complexity caution.** RFC 8446 section 4.2.3 lets the extension be
+   omitted when it would duplicate `signature_algorithms`, so `None` has to mean "fall
+   back to `signature_schemes`" and not "no constraint". Saying that first shows the work.
+5. **On offering a PR: the evidence says offer it.** Both prior requests were carried by a
+   requester who engaged on implementation, and #2235 landed because the requester said
+   "I'll work on the PR then." This reverses the earlier advice in the notes below. Offer it
+   only if the intent is real, because not delivering is worse than not offering.
+
+## Verified facts, for drawing on rather than pasting
 
 Filed as a feature request against `rustls/rustls`, before the article publishes rather
 than after. The article names rustls behaviour, and telling the project first is the
 courteous order even though nothing here is a vulnerability.
 
-The text below is what gets posted, kept verbatim so the repository records exactly what
-was said upstream.
+Suggested title: **Expose `signature_algorithms_cert` to `ResolvesServerCert::resolve`**
 
-**Title:** Expose `signature_algorithms_cert` to `ResolvesServerCert::resolve`
+Everything below is verified source material, not text to paste. Record the filed issue URL
+here once it exists.
 
 ---
 
