@@ -94,10 +94,28 @@ The audit is the gate this file closes. These remain, per `SCOPE.md` Phase 6:
       anyway. Filing bug reports against conformant behavior would be wrong and
       would get the whole result dismissed. What is left is narrower and still
       worth doing:
-      - **rustls, a feature request rather than a bug.** `signature_algorithms_cert`
-        is not among the eight fields `ResolvesServerCert::resolve` receives, so a
-        custom resolver cannot implement the check even when the operator wants it.
-        Exposing it is an API gap, and that framing is accurate and constructive.
+      - **rustls, a feature request rather than a bug. Drafted 2026-08-12, awaiting
+        Danny's approval before posting to a third-party repo.**
+        `signature_algorithms_cert` is not among the eight fields
+        `ResolvesServerCert::resolve` receives, so a custom resolver cannot
+        implement the check even when the operator wants it.
+
+        **Re-verified against the source, not the 2026-08-10 reading.** Fetched
+        `rustls/src/server/server_conn.rs` at tag `v/0.23.43` on 2026-08-12: the
+        `ClientHello` struct at line 139 has exactly eight fields with eight
+        matching public accessors, and none is `signature_algorithms_cert`.
+        `signature_schemes` is `signature_algorithms`, which governs the handshake
+        signature only. Also confirmed `0.23.43` is still the newest stable release
+        on crates.io, so the finding is against current code rather than a stale
+        version.
+
+        **The strongest argument found while verifying:** `certificate_authorities`
+        *is* exposed on `ClientHello`, with a doc comment linking RFC 8446 section
+        4.2.4. That extension exists solely to guide server certificate selection,
+        so rustls already surfaces one selection extension by deliberate design.
+        `signature_algorithms_cert` is the other extension doing that job. Their own
+        source argues for the change, which is a far better opening than a
+        measurement does.
       - **Go `crypto/tls`, optional and lower priority.** The check is declined by a
         source comment citing the SHOULD, so it is a documented decision. Any ask
         belongs upstream in Go, not in Caddy.
