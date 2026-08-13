@@ -13,7 +13,12 @@ behave as though it does. Three do not, correctly.
 Nothing measured here is a standards violation, and this repo will not describe it
 as one.
 
-**Released: v1.0.0, MIT.** All measurements are in and re-run from a clean build.
+**Released: v1.0.0, MIT.** Cite the concept DOI
+[10.5281/zenodo.21911032](https://doi.org/10.5281/zenodo.21911032), which resolves to
+the latest version. v1.0.0 is pinned by
+[10.5281/zenodo.21911033](https://doi.org/10.5281/zenodo.21911033).
+
+All measurements are in and re-run from a clean build.
 Results per cell are in `MATRIX.md`, limitations and corrections in `CHANGELOG.md`,
 and `PRIOR-ART.md` governs every claim published from here. `CONTRIBUTING.md` has
 the standards a patch has to meet.
