@@ -34,6 +34,27 @@ Two sentences travel with that claim permanently, or they become the rebuttal.
    to survey, so any phrasing that implies a fleet scan promises something this
    project cannot deliver.
 
+   **Verified against the arXiv abstract 2026-08-12**, fetched and grepped. Full
+   title "Measurement Study of Post-Quantum Readiness of Internet: 2026", authors
+   Vanishka Mohan Dubey and Gaurav Varshney. The count and the zero are exact:
+   "32,011 domains" and "Notably, 0% adoption of hybrid post-quantum certificates
+   was observed".
+
+   **Cite the 49.3% alongside the 0%, always. It is the better half of the
+   result.** The same abstract reports that "49.3% of domains support hybrid
+   post-quantum key exchange mechanisms (e.g., MLKEM768 with X25519), whereas 50.7%
+   continue to use classical key exchange". So the deployed web is roughly half
+   migrated on key exchange and at exactly zero on certificates.
+
+   That asymmetry is this project's subject stated in someone else's numbers, and it
+   lines up with the mechanism recorded further down this file: key exchange is
+   negotiated in the plaintext ClientHello and ServerHello, so it is measurable by
+   any passive observer and every readiness tool reports it, while the Certificate
+   message is encrypted and no passive tool can see it. The half the industry can
+   watch is the half that moved. Quoting 0% alone reads as "nobody has started";
+   quoting both reads as "the visible half moved and the invisible half did not",
+   which is true, stronger, and harder to argue with.
+
    **Have the answer to the survey rebuttal ready, because it exists and it is
    public. Added 2026-08-12.** DigiCert's 2026 Quantum Readiness Outlook, a survey
    of 1,001 IT and security decision-makers across the US, UK, and Australia
