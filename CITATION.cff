@@ -58,14 +58,21 @@ keywords:
   - public key infrastructure
   - interoperability
 license: MIT
+version: 1.0.0
+date-released: "2026-08-13"
 
-# Filled in at the Phase 6 public flip, not before:
-#   doi / identifiers  - Zenodo mints the concept and version DOIs on the first
-#                        GitHub release, so there is nothing truthful to put here
-#                        until that release exists.
-#   url                - the article on carrdigital.dev, which SCOPE.md requires
-#                        be written after the matrix is populated, not before.
-#   version            - the released tag.
-#   date-released      - the date of that release.
-# A placeholder DOI in a citation file is a fabricated identifier. Leave these
-# absent rather than guessed.
+# version and date-released are set before tagging on purpose: Zenodo archives the
+# snapshot at the tag, so anything knowable belongs in the file the archive captures.
+# The date is UTC, matching how GitHub and Zenodo timestamp the release, rather than
+# the author's local date, so the citation file and the archive record agree.
+#
+# Still absent, deliberately:
+#   doi / identifiers  - Zenodo mints the concept and version DOIs when the release
+#                        is published, so there is nothing truthful to put here yet.
+#                        Add both after: the concept DOI first, then the version DOI
+#                        for 1.0.0, matching pqc-cert-matrix.
+#   url                - the article on carrdigital.dev, which SCOPE.md requires be
+#                        written after the matrix is populated, not before.
+#
+# A placeholder DOI in a citation file is a fabricated identifier. Absent beats
+# guessed, and adding it in the next commit costs nothing.
