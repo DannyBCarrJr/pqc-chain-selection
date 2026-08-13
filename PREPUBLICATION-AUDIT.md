@@ -88,10 +88,31 @@ generators recreate it.
   - Script comments in `runners/envoy.sh`, `runners/caddy.sh`, and
     `probe/smoke/run.sh` that cited the old file now cite `CONTRIBUTING.md`.
 
-  **The three sibling public repos still carry the same two lines and the same
-  tracked `AGENTS.md`.** That is now a known inconsistency and the follow-up is
-  recorded rather than assumed: apply the same treatment to `pqc-cert-matrix`,
-  `pqc-chain-budget`, and `post-quantum-measured-lab`.
+  **Correction, and the follow-up is now done.** The claim above that "the identical
+  two lines are already public in `pqc-cert-matrix`, `pqc-chain-budget`, and
+  `post-quantum-measured-lab`" was **wrong**. It came from a shell loop that failed to
+  change directory and so grepped one repository three times, reporting identical line
+  numbers for all three, which was the tell. Recorded because a false pass from a
+  buggy check is more dangerous than a failed check.
+
+  What was actually true, verified per repository on 2026-08-12, and all of it now
+  fixed and pushed:
+
+  - None of the three had the README footer. That part was fiction.
+  - `pqc-cert-matrix` and `pqc-chain-budget` each tracked an agent-context file
+    referencing a local steering directory. Both are now untracked, with the
+    methodology rewritten as `CONTRIBUTING.md`.
+  - `pqc-cert-matrix` was worse than a tooling footprint: its agent file named a
+    private manuscript repository and described that project's content freeze as
+    legally load-bearing, and both it and `SCOPE.md` justified a rule by reference to
+    an employment boundary. All three are gone.
+  - `post-quantum-measured-lab` generated its lab leaf certificate with a CN and SAN
+    on a personal domain kept separate from the name on the repository, linking the
+    two in public. Now an RFC 6761 reserved TLD.
+  - `pqc-chain-budget` carried the same sentence-initial word that trips an
+    employer-name scan, added by today's own work. Lowercased.
+
+  Final gate across all three: clean on 490, 702, and 35 tracked files respectively.
 - **The harness redacted correctly at collection time.** Zero absolute paths in
   99 files is the direct result of `SCOPE.md` requiring redaction from Phase 4
   onward, after cert-matrix. The instruction worked, and this table is the
