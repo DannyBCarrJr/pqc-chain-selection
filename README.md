@@ -1,11 +1,17 @@
 # pqc-chain-selection
 
 Three of five TLS server stacks sent a certificate chain the client had said it
-would not accept, and every one of those handshakes completed.
+would not accept. All three are conformant. That is the finding.
 
-If you are planning a post-quantum certificate migration and expect
-`signature_algorithms_cert` to keep the wrong chain off the wire, two of the five
-honored it. The rest served the chain anyway and the client validated it.
+RFC 8446 makes the chain-signature constraint a SHOULD, and when a server holds no
+chain the client will accept, section 4.4.2.2 tells it to "continue the handshake
+by sending the client a certificate chain of its choice". So if you are planning a
+post-quantum migration and expect `signature_algorithms_cert` to keep the wrong
+chain off the wire, the specification does not promise you that. Two of the five
+behave as though it does. Three do not, correctly.
+
+Nothing measured here is a standards violation, and this repo will not describe it
+as one.
 
 **Status: pre-publication, Phase 6.** All measurements are in and re-run from a
 clean build. Phase 0's prior-art gate closed on 2026-08-12, when the Springer
@@ -74,6 +80,27 @@ certificates. The only chain available is exactly that.
 The rustls result reproduces on all three builds, including the post-quantum one,
 so it is not an artifact of one cryptographic provider.
 
+## Conformance, stated before anything else is read
+
+RFC 8446 section 4.4.2.2 makes the chain-signature constraint a SHOULD, not a MUST,
+and it goes further: a server that cannot produce a chain signed only with the
+client's advertised algorithms SHOULD send a chain of its choice anyway. In the
+cell above there is one configured chain and the client excluded it, so the
+fallback clause applies directly.
+
+**Caddy, rustls, and Envoy are conformant.** Go's `crypto/tls` declines the check
+in a source comment that cites that SHOULD explicitly, so in Caddy's case it is a
+documented decision rather than an oversight. Under the same clause, refusing with
+`handshake_failure` is the behavior that sits less comfortably with the text, not
+serving.
+
+The finding is not that anyone is broken. It is that an operator running a mixed
+fleet through a migration cannot rely on `signature_algorithms_cert` to keep a
+chain off the wire, because two thirds of the stacks measured here do not treat it
+as binding and the specification does not require them to. Writing that up as a
+standards violation would be wrong, and would also be the fastest way to have the
+whole result dismissed.
+
 ## Why rustls cannot honor it
 
 Source reading, not a handshake, and stamped Reported for that reason.
@@ -99,13 +126,19 @@ That is correct under RFC 8446, and it has a consequence worth saying plainly: a
 operator cannot steer which chain goes out by reordering the configuration file.
 During a migration the client population decides, one connection at a time.
 
-## What OpenSSL got right, and who said so first
+## What OpenSSL does, and who documented it first
 
-OpenSSL was correct in all six dual-chain cells, and `signature_algorithms_cert`
-was the deciding variable: two cells differing in nothing but that extension
-received different chains. One cell is stronger than the rest. A client asking for
-ML-DSA `CertificateVerify` while sending the stock Go certificate list got no
-chain at all, which is the correct refusal rather than a lucky pass.
+OpenSSL treated `signature_algorithms_cert` as binding in all six dual-chain
+cells, and it was the deciding variable: two cells differing in nothing but that
+extension received different chains. One cell carries more weight than the rest. A
+client asking for ML-DSA `CertificateVerify` while sending the stock Go certificate
+list received no chain at all, which is a deliberate refusal rather than a lucky
+pass.
+
+Where both chains are configured the fallback clause does not apply, because the
+server is "able to provide such a chain", so honoring the extension there is the
+stronger reading of the text. That is a different situation from the deciding cell
+above, and the two should not be quoted as one result.
 
 None of that is presented here as a discovery. Frauenschläger and Mottok describe
 multiple-chain deployment selected by `signature_algorithms_cert` as "the simplest

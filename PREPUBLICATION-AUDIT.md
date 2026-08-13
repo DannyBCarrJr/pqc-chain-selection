@@ -86,7 +86,23 @@ The audit is the gate this file closes. These remain, per `SCOPE.md` Phase 6:
       zero banned vocabulary, and the surviving instances of "first" and "only" are
       a novelty disclaimer, a credit to prior work, and three uses meaning "sole".
 - [ ] Zenodo DOI, which requires the first GitHub release
-- [ ] Upstream issues against the stacks that serve an excluded chain
+- [ ] Upstream reports. **`SCOPE.md` calls these "upstream issues against
+      whichever stacks get it wrong", and that wording is now wrong.** `MATRIX.md`
+      and `runners/FINDINGS-rustls.md` both establish that Caddy, rustls, and Envoy
+      are conformant: RFC 8446 section 4.4.2.2 makes the constraint a SHOULD, and
+      its fallback clause tells a server with no acceptable chain to send one
+      anyway. Filing bug reports against conformant behavior would be wrong and
+      would get the whole result dismissed. What is left is narrower and still
+      worth doing:
+      - **rustls, a feature request rather than a bug.** `signature_algorithms_cert`
+        is not among the eight fields `ResolvesServerCert::resolve` receives, so a
+        custom resolver cannot implement the check even when the operator wants it.
+        Exposing it is an API gap, and that framing is accurate and constructive.
+      - **Go `crypto/tls`, optional and lower priority.** The check is declined by a
+        source comment citing the SHOULD, so it is a documented decision. Any ask
+        belongs upstream in Go, not in Caddy.
+      - **Envoy, nothing to file.** Its dual-chain behavior is unresolved, and a
+        report resting on a withdrawn result would be indefensible.
 - [ ] The article, which `SCOPE.md` requires be written **after** the matrix is
       populated, not before. cert-matrix published the article first and turned a
       later phase into a commitment; do not repeat that.
