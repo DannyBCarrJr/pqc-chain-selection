@@ -266,11 +266,42 @@ Stamp: Reported. Issue bodies and maintainer comments read via `gh` on
 
 **TLS-Anvil** (Maehren et al., USENIX Security 2022), covering 13 TLS
 implementations, is the state of the art in cross-implementation TLS 1.3
-conformance testing. Its `TLS-Testsuite/annotations/out_of_scope/8446.txt`,
-around lines 65 to 71, lists all four RFC 8446 section 4.4.2.2 certificate
-selection requirements as untested, including the requirement that server
-certificates be signed by a client-advertised algorithm where possible. The
-paper itself returned zero occurrences of `signature_algorithms`, "certificate
+conformance testing.
+
+**Re-verified 2026-08-12 against the file itself**, fetched raw from
+`tls-attacker/TLS-Anvil` on `main`. The claim holds and the wording here was
+imprecise in two ways that a reviewer checking the file would have caught, so both
+are fixed.
+
+`TLS-Testsuite/annotations/out_of_scope/8446.txt` is 118 lines. The section 4.4.2.2
+requirements marked out of scope sit at **lines 63, 65, 67, and 69**, not 65 to 71:
+
+| line | requirement marked out of scope |
+|---|---|
+| 63 | certificate type MUST be X.509v3 |
+| 65 | end-entity public key MUST be compatible with the selected algorithm from `signature_algorithms` |
+| 67 | key MUST be usable for signing with a scheme indicated in `signature_algorithms`/`signature_algorithms_cert` |
+| 69 | "All certificates provided by the server MUST be signed by a signature algorithm advertised by the client if it is able to provide such a chain" |
+
+**Do not say "all four".** Section 4.4.2.2 has four bulleted rules plus three
+normative paragraphs. Three of the four bullets are out of scope; the fourth, that
+`server_name` and `certificate_authorities` guide certificate selection, is **not**
+in the file. Four items are listed, they are not "all four" of anything, and the
+count invites a correction that costs more than the precision does. Say instead:
+TLS-Anvil marks the certificate-selection requirements out of scope, including the
+one that matters most here, and quote line 69.
+
+Line 69 is the one to lead with. It is the dual-chain MUST, and it is the exact
+requirement this project measures.
+
+Two more things in the same file, both worth knowing. Lines 71 and 73 also mark the
+SHA-1 fallback constraint and the client's abort obligation out of scope. And the
+sentence that carries the fallback permission this project now leans on, that a
+server which "cannot produce a certificate chain" SHOULD continue by sending a chain
+of its choice, **does not appear in the out-of-scope file at all**. Draw no
+conclusion from that beyond its absence: it is not evidence that they test it.
+
+The paper itself returned zero occurrences of `signature_algorithms`, "certificate
 selection", and "quantum" on a full-text grep.
 
 A citable admission from the incumbent is stronger than any number of empty
