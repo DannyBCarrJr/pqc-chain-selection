@@ -3,9 +3,21 @@
 Measured behavior of TLS server software choosing between a classical and a
 post-quantum certificate chain when both are configured.
 
-**Status: pre-publication, Phase 0.** Private until the matrix is populated and
-the pre-publication audit has run. See `SCOPE.md` for phases and `PRIOR-ART.md`
-for what this project may and may not claim.
+**Status: pre-publication, Phase 6.** The matrix is populated across five server
+stacks and re-run from a clean build; Phases 1 through 5 are done. **Phase 0's
+prior-art gate closed on 2026-08-12**, when the Springer chapter that could have
+stopped this project (10.1007/978-3-032-16089-8_30) was read in full and turned
+out to propose a mechanism rather than measure chain selection. It cost two
+framing claims, which are recorded in `PRIOR-ART.md`.
+
+Still private, and the remaining gate is the pre-publication audit rather than
+any measurement. See `SCOPE.md` for the phases and `PRIOR-ART.md` for what this
+project may and may not claim.
+
+> This line read "Phase 0" until 2026-08-12, which was defensible while the
+> prior-art gate could still have killed the project and wrong the moment it
+> closed. A status line that lags the work is how a repo ends up published on a
+> claim nobody rechecked.
 
 ## The question
 

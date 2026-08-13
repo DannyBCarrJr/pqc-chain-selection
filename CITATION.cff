@@ -1,0 +1,71 @@
+cff-version: 1.2.0
+title: "TLS server certificate chain selection under dual-stack deployment"
+message: >-
+  If you use these measurements or cite their findings, please cite as below.
+  Read PRIOR-ART.md first. It records, per claim, what published work already
+  covers, and two framing points here are cited to prior work rather than
+  claimed: multiple-chain deployment selected by signature_algorithms_cert is
+  described as established practice by Frauenschlaeger and Mottok, who also
+  state that OpenSSL already supports it. Three claims were retracted by
+  self-audit on 2026-08-10 and one server result is recorded as unresolved.
+type: software
+authors:
+  - given-names: "Danny B."
+    family-names: Carr
+    name-suffix: Jr.
+    affiliation: "Carr Digital LLC"
+repository-code: "https://github.com/DannyBCarrJr/pqc-chain-selection"
+abstract: >-
+  Measured behaviour of TLS 1.3 server software choosing which certificate chain
+  to send when the client constrains acceptable certificate signature
+  algorithms. The client is a purpose-built probe that emits
+  signature_algorithms and signature_algorithms_cert independently, which stock
+  tooling cannot do.
+
+  Five server stacks, versions recorded per run rather than assumed: openssl
+  s_server 3.5.5, nginx 1.31.3 over OpenSSL 3.5.7, Caddy built from source on
+  go1.26.0 over Go crypto/tls, rustls 0.23.43 across three builds (ring, the
+  default aws_lc_rs, and rustls-post-quantum 0.2.4 with aws-lc-rs-unstable), and
+  Envoy 1.36.9 over BoringSSL. Every cell ships a script and captured output.
+
+  In the headline cell the only configured chain is one the client has excluded,
+  an EC leaf key under an ML-DSA-44-signed intermediate offered to a client
+  advertising 0x0403 for both extensions. openssl s_server and nginx refuse with
+  handshake_failure before sending a certificate. Caddy, rustls, and Envoy serve
+  the excluded chain and the handshake completes, so the client validates a chain
+  it said it would not accept. The rustls result reproduces across all three
+  builds, so it is not an artifact of one cryptographic provider.
+
+  Scope limits are part of the result. The dual-chain and configuration-order
+  measurements cover openssl s_server, nginx, Caddy, and rustls. Envoy appears
+  on the single-chain cells only: its dual-chain behaviour is recorded as
+  UNRESOLVED and withdrawn, because the runner and ad-hoc probes disagreed and
+  two of the probe harnesses used to investigate were themselves defective.
+  Apache httpd and HAProxy are not covered; both wrap OpenSSL and answer a
+  separate question about whether a wrapper overrides its library.
+
+  This is a bench measurement of server software, not a survey of deployed
+  sites. Dubey and Varshney (arXiv:2606.16473) found 0% hybrid post-quantum
+  certificate adoption across 32,011 domains in 2026, so there is no deployed
+  dual-chain population to scan.
+keywords:
+  - post-quantum cryptography
+  - TLS
+  - X.509
+  - certificate chain selection
+  - signature_algorithms_cert
+  - ML-DSA
+  - public key infrastructure
+  - interoperability
+license: MIT
+
+# Filled in at the Phase 6 public flip, not before:
+#   doi / identifiers  - Zenodo mints the concept and version DOIs on the first
+#                        GitHub release, so there is nothing truthful to put here
+#                        until that release exists.
+#   url                - the article on carrdigital.dev, which SCOPE.md requires
+#                        be written after the matrix is populated, not before.
+#   version            - the released tag.
+#   date-released      - the date of that release.
+# A placeholder DOI in a citation file is a fabricated identifier. Leave these
+# absent rather than guessed.

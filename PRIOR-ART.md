@@ -261,7 +261,7 @@ deliberate.**
 
 **IETF PLANTS WG**, "PKI, Logs, And Tree Signatures", active, group record
 timestamped 2026-04-02. Chairs Russ Housley and Thom Wiggers, AD Deb Cooley.
-Charter goal, verbatim from the datatracker group API:
+The charter goal, verbatim from the datatracker group API:
 
 > The goal of the PLANTS Working Group is to trim the costs of large post-quantum
 > signatures on PKIs with Certificate Transparency (CT; RFC 6962 and RFC 9162),
