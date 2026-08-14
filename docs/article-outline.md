@@ -114,6 +114,35 @@ Nothing goes in the article that is not in this table.
 Every one of these was verified against its source on 2026-08-12. `PRIOR-ART.md` carries
 the detail and the two claims that are cited rather than made.
 
+## Status: PUBLISHED 2026-08-13
+
+**Live at https://carrdigital.dev/writing/three-of-five-sent-it-anyway/**
+
+Canonical source is `carr-digital/src/pages/writing/three-of-five-sent-it-anyway.md`. The
+draft that lived at `docs/article-draft.md` was **deleted on publication, deliberately**:
+this repo is public, so a second copy here would be a second public copy of the same
+article with nothing keeping the two in step. Everything below is the design record of how
+it was written, which is worth keeping. The article itself is not.
+
+Verified live by content rather than status code, with a negative control confirming a
+bogus slug does not return the article. Listing, RSS, and sitemap all picked it up.
+
+**The rustls gate closed 2026-08-13**: `rustls/rustls#3214` is filed and open. The draft is
+clear to publish.
+
+**Title settled 2026-08-13: "Three of five sent it anyway", slug
+`three-of-five-sent-it-anyway`.** The working title below was 50 characters and the house OG
+card holds about 40 at its 88px title size, so it wrapped to three lines and collided with
+the dek. Rather than bend the card geometry for one article, the title moved to the finding
+itself. **Any future title for this site has a hard ceiling of roughly 40 characters**, which
+is worth knowing before falling in love with a long one. OG card rendered and committed at
+`carr-digital/public/og/three-of-five-sent-it-anyway.png`.
+
+**Citations closed 2026-08-13.** Both primary sources downloaded and grepped. The Valenta
+slides verified clean, every figure verbatim. The DigiCert report corrected two claims that
+had already reached the draft, recorded in `PRIOR-ART.md`. **Nothing is blocking
+publication.**
+
 ## Before it ships
 
 - **A Provenance section**, matching the other seven articles, separating measured from

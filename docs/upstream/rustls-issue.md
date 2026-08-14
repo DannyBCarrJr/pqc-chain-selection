@@ -64,7 +64,7 @@ already territory he has thought about.
    "I'll work on the PR then." This reverses the earlier advice in the notes below. Offer it
    only if the intent is real, because not delivering is worse than not offering.
 
-## Verified facts, for drawing on rather than pasting
+## Verified facts, mapped to the template
 
 Filed as a feature request against `rustls/rustls`, before the article publishes rather
 than after. The article names rustls behaviour, and telling the project first is the
@@ -72,76 +72,129 @@ courteous order even though nothing here is a vulnerability.
 
 Suggested title: **Expose `signature_algorithms_cert` to `ResolvesServerCert::resolve`**
 
-Everything below is verified source material, not text to paste. Record the filed issue URL
-here once it exists.
+**These are facts and source pointers, laid out under the headings they belong to. They are
+not sentences to paste.** The AI policy at the top of this file is the reason, and bullets
+are the safer form: a paste-ready paragraph is a trap when the project can hide the comment
+without notice. Write each section in your own words from the material under it.
+
+The live template, fetched from `rustls/rustls` on 2026-08-13, is a one-item checklist plus
+four bold headings. Verify it again if this sits for a while.
 
 ---
 
-`ResolvesServerCert::resolve` receives a `ClientHello`, and that struct does not carry the
-client's `signature_algorithms_cert` extension. As of `v/0.23.43`,
-`rustls/src/server/server_conn.rs:139` defines eight fields:
+### Checklist: `I've searched the issue tracker for similar requests`
 
-```rust
-server_name  signature_schemes  alpn  server_cert_types
-client_cert_types  cipher_suites  certificate_authorities  named_groups
-```
+Tickable honestly. See the tracker search above: no prior request exists for exposing this
+extension, and the one string match (#2420) is unrelated.
 
-with eight matching accessors. `signature_schemes` is `signature_algorithms`, which
-constrains the handshake signature. There is no equivalent for the certificate chain.
+### Is your feature request related to a problem? Please describe.
 
-The practical effect is that a custom resolver cannot implement RFC 8446 section 4.4.2.2's
-certificate-signature preference even when the operator wants it, because the input needed
-to make the decision never reaches the resolver.
+Lead with the operator scenario. In both precedent threads a maintainer's first move was
+asking what you concretely want to do, so answer it before anything else.
 
-**This is a feature request, not a bug report.** Section 4.4.2.2 makes the chain-signature
-constraint a SHOULD, and where a server cannot produce a chain signed only with the
-client's advertised algorithms it explicitly says the server SHOULD "continue the handshake
-by sending the client a certificate chain of its choice". rustls is conformant, and I am
-not suggesting otherwise.
+- An operator holds a classical chain and a post-quantum chain during a migration, serving
+  both from one rustls server on **one hostname**.
+- Some clients cannot validate post-quantum signatures on certificates and say so, in
+  `signature_algorithms_cert`.
+- A rustls resolver has no way to see that, so it cannot send those clients the classical
+  chain. The two chains are indistinguishable from inside `resolve`.
+- The mechanism: `ResolvesServerCert::resolve` receives a `ClientHello` that carries eight
+  fields, at `rustls/src/server/server_conn.rs:139`, tag `v/0.23.43`:
+  `server_name`, `signature_schemes`, `alpn`, `server_cert_types`, `client_cert_types`,
+  `cipher_suites`, `certificate_authorities`, `named_groups`. Eight matching accessors.
+  `signature_algorithms_cert` is not among them, in the release or on dev HEAD.
+- `signature_schemes` is `signature_algorithms`, which constrains the **handshake**
+  signature. There is no equivalent for signatures **on the chain**. Those are different
+  questions and a migration puts them in opposition.
 
-## Why it is worth exposing anyway
+**Say plainly that this is not a bug report.** RFC 8446 section 4.4.2.2 makes the
+chain-signature constraint a SHOULD, and where a server cannot produce a conforming chain
+it says the server SHOULD "continue the handshake by sending the client a certificate chain
+of its choice". rustls is conformant. Saying so first is what keeps this a feature request
+instead of an argument.
 
-`certificate_authorities` is already on `ClientHello`, with a doc comment linking RFC 8446
-section 4.2.4. That extension exists for exactly one purpose, guiding server certificate
-selection, and rustls surfaces it so a resolver can act on it.
-`signature_algorithms_cert` is the other extension in that same job, and it is the one that
-a post-quantum migration turns on.
+### Describe the solution you'd like
 
-The case gets sharper during a migration. An operator holding a classical chain and a
-post-quantum chain has no way, in rustls, to write a resolver that respects a client saying
-it cannot validate post-quantum certificate signatures. The two chains are
-indistinguishable from inside `resolve`.
+Narrow it here, before anyone narrows it for you. That single move is what turned #2235
+from a pushback into an approval.
 
-## What I measured
+- A `signature_algorithms_cert` accessor on `ClientHello`, populated when the extension is
+  present.
+- **No change to any rustls default.** Not proposing rustls enforce the constraint, and not
+  proposing it send the extension as a client. Expose it to custom resolvers, nothing more.
+- `None` when the extension is absent has to mean **"fall back to `signature_schemes`"**,
+  not "no constraint". RFC 8446 section 4.2.3 permits omitting the extension when it would
+  duplicate `signature_algorithms`. Worth documenting on the accessor, and saying it here
+  pre-empts the complexity caution `ctz` raised on #2484.
 
-Configuring a single chain whose intermediate carries an ML-DSA-44 signature, then
-connecting with a client advertising `ecdsa_secp256r1_sha256` (0x0403) in both
-`signature_algorithms` and `signature_algorithms_cert`, rustls serves that chain and the
-handshake completes.
+### Describe alternatives you've considered
 
-Reproduced on three builds of `v/0.23.43`: the `ring` provider, the default `aws_lc_rs`
-provider, and `rustls-post-quantum` 0.2.4 with `aws-lc-rs-unstable`. So it is not a
-provider-specific behaviour. openssl `s_server` 3.5.5 and nginx 1.31.3 refuse the same
-configuration with `handshake_failure`, which is a different reading of the same SHOULD
-rather than a more correct one.
+The section the earlier draft of this file skipped entirely. Each of these is a real
+alternative that was tried or reasoned through, and each fails for a stated reason.
 
-Scripts, captured output, and the version-pinned matrix are here:
-https://github.com/DannyBCarrJr/pqc-chain-selection, archived at
-https://doi.org/10.5281/zenodo.21911032. The rustls column is
-`runners/FINDINGS-rustls.md`, and every cell ships the script that produced it alongside
-the output.
+- **`ResolvesServerCertUsingSni`.** Selects on hostname. A dual-stack migration serves both
+  chains on the same hostname, so SNI cannot express the distinction. `SingleCertAndKey`
+  selects on nothing: its `resolve` takes `_client_hello` and returns the one key.
+  (`server/handy.rs:210` and `crypto/signer.rs:124`.)
+- **A custom resolver selecting on `signature_schemes` alone.** That is the leaf **key**
+  type, not the signatures on the chain. Measured: a chain with an EC leaf key under an
+  ML-DSA-44-signed intermediate looks acceptable on `signature_schemes` and is exactly the
+  chain the client excluded.
+- **Waiting for post-quantum support to mature in rustls.** Does not close this. Measured
+  on `rustls-post-quantum` 0.2.4 with `aws-lc-rs-unstable`, where the resolver correctly
+  reports `signature_schemes = [ML_DSA_44]` and serves an ML-DSA chain, and there is still
+  no accessor. The gap is independent of post-quantum maturity.
+- **Terminating TLS on OpenSSL or nginx instead.** Works, since both honour the extension,
+  and it means not using rustls for the job. Worth naming rather than hiding.
+- **Having rustls enforce the constraint by default.** Explicitly not the ask. It changes
+  behaviour for everyone and sits further from the fallback clause than today's behaviour
+  does.
 
-## Shape of the ask
+### Additional context
 
-Adding a `signature_algorithms_cert` accessor to `ClientHello`, populated when the
-extension is present and `None` when it is absent, would let a resolver implement the
-preference without changing any default behaviour. RFC 8446 section 4.2.3 says the
-extension may be omitted when it would duplicate `signature_algorithms`, so `None` needs to
-mean "fall back to `signature_schemes`" rather than "no constraint", and that distinction is
-probably worth documenting on the accessor.
+The measurement, and the `certificate_authorities` precedent. That precedent is the
+strongest sentence available: it is their own design decision, in their own source,
+arguing for the change.
 
-Happy to test a change against the harness above, or to add the rustls cells to the
-published matrix once an accessor exists.
+- **`certificate_authorities` is already on `ClientHello`**, with a doc comment linking RFC
+  8446 section 4.2.4, and on dev HEAD it has a deliberate carve-out hiding it from the
+  resolver on TLS 1.2 per the RFC. It exists for one purpose, guiding server certificate
+  selection. `signature_algorithms_cert` is the other extension in that same job, and it is
+  the one a post-quantum migration turns on.
+- **What was measured.** One configured chain, EC leaf key under an ML-DSA-44-signed
+  intermediate. Client advertising `ecdsa_secp256r1_sha256` (0x0403) in both
+  `signature_algorithms` and `signature_algorithms_cert`. rustls serves that chain.
+- **Reproduced on three builds of `v/0.23.43`**: `ring`, default `aws_lc_rs`, and
+  `rustls-post-quantum` 0.2.4 with `aws-lc-rs-unstable`. Not provider-specific.
+- **Cross-stack, same cell.** `openssl s_server` 3.5.5 and nginx 1.31.3 refuse with
+  `handshake_failure`. Caddy and Envoy serve it, as rustls does. That is a different
+  reading of the same SHOULD, not a more correct one, and the issue should say so.
+- **Evidence.** https://github.com/DannyBCarrJr/pqc-chain-selection, archived at
+  https://doi.org/10.5281/zenodo.21911032. The rustls column is
+  `runners/FINDINGS-rustls.md`. Every cell ships the script that produced it beside the
+  output.
+- **The offer.** Testing a change against the existing harness is deliverable today. Add
+  the PR offer in one sentence only if the intent is real: #2235 landed because the
+  requester said "I'll work on the PR then."
+
+## FILED
+
+**rustls/rustls#3214, "Expose signature_algorithms_cert to ResolvesServerCert::resolve",
+opened 2026-08-13 by `DannyBCarrJr`, state OPEN.**
+https://github.com/rustls/rustls/issues/3214
+
+Written by Danny in his own words, per the AI policy at the top of this file. Every version
+string, field name, RFC section, code point, and path in it was checked against this
+repository before posting.
+
+**The article gate is now open.** `docs/article-draft.md` may move into
+`carr-digital/src/pages/writing/`, and it names rustls behaviour, so the courteous order has
+been kept.
+
+Watch the thread. Both precedents opened with a maintainer asking what the concrete use
+case is (#2484) or pushing back on practicality (#2235), and #2235 turned on the requester
+narrowing the ask in their next comment. That narrowing is already in the issue body here,
+so the likelier first move is a question about the use case.
 
 ---
 

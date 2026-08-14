@@ -56,25 +56,45 @@ Two sentences travel with that claim permanently, or they become the rebuttal.
    which is true, stronger, and harder to argue with.
 
    **Have the answer to the survey rebuttal ready, because it exists and it is
-   public. Added 2026-08-12.** DigiCert's 2026 Quantum Readiness Outlook, a survey
-   of 1,001 IT and security decision-makers across the US, UK, and Australia
-   conducted by Propeller Insights in May 2026, reports that "Only 7% report that
-   more than half of their digital certificates currently use quantum-safe or
-   hybrid cryptography." A reviewer holding that number will read the 0% above as
-   wrong.
+   public. Added 2026-08-12. VERIFIED AGAINST THE PRIMARY SOURCE 2026-08-13**, PDF
+   downloaded and grepped, replacing the postquantum.com summary this arrived
+   through.
 
-   Both can be true, and the reconciliation is the interesting part rather than a
-   dodge. The 7% is **self-reported**, covers an organization's whole certificate
-   estate **including private and internal PKI**, and uses "quantum-safe or hybrid"
-   without defining it. The 0% is **measured**, and scoped to hybrid post-quantum
-   certificates on public web domains. Different populations, different methods,
-   and one of them is a vendor surveying its own market. Neither number is evidence
-   against the other, and saying so plainly is stronger than citing only the one
-   that helps.
+   The document is **"The Quantum Execution Gap: Key findings from DigiCert's
+   Quantum Readiness Outlook", Research Report 2026**.
+   https://www.digicert.com/content/dam/digicert/pdfs/report/quantum-readiness-outlook.pdf
+   Its methodology page records an independent survey by Propeller Insights on
+   behalf of DigiCert in May 2026, of 1,001 IT and cybersecurity decision-makers
+   across the United States (500), the United Kingdom (251), and Australia (250).
+   All of that matches what the summary said.
 
-   Reported, and note the sourcing trap: this reached us through a postquantum.com
-   summary. Cite DigiCert's own report, not the summary. Two facts in this corpus
-   were fabricated by summarizers.
+   **The quote in this file was wrong, by one word, and it is fixed.** The report
+   says "Only 7% report that more than half of their **certificates** currently use
+   quantum-safe or hybrid cryptography, an increase of less than two percentage
+   points since last year." This file had "their **digital** certificates". The
+   word was not in the source. Small, and it is exactly the class of drift that
+   the download-and-grep rule exists to catch.
+
+   **A second correction, and this one mattered more.** This file previously said
+   the 7% "covers an organization's whole certificate estate including private and
+   internal PKI". **The report never says that.** It says "certificates",
+   unqualified, and contains no discussion of public versus private or internal
+   PKI anywhere. That was an inference presented as a property of the source, and
+   it had already reached the article draft before it was caught.
+
+   The defensible reconciliation, all of it from the text: the 7% is
+   **self-reported**, it **never defines** "quantum-safe or hybrid", and it counts
+   an organization's own certificates **without scoping them to publicly trusted
+   ones**. The 0% is **measured**, and scoped to hybrid post-quantum certificates
+   on public web domains. Different populations, different methods, and one of them
+   is a vendor surveying its own market. Neither number is evidence against the
+   other. The absence of scoping is the stronger point anyway, because it needs no
+   assumption about what the estate contains.
+
+   **Note for anyone re-fetching it: the PDF sits behind Incapsula and returns a
+   1KB interstitial to `curl` and other non-browser clients.** Send a browser
+   User-Agent and it serves the real 638KB PDF. Same class of trap as zenodo.org's
+   403, recorded here so it is not mistaken for a dead link.
 
    **A second, smaller number points the same way and should be handled the same
    way. Added 2026-08-12.** An IETF 126 PLANTS talk by Nalini Elkins

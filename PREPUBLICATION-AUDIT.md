@@ -163,9 +163,23 @@ The audit is the gate this file closes. These remain, per `SCOPE.md` Phase 6:
       anyway. Filing bug reports against conformant behavior would be wrong and
       would get the whole result dismissed. What is left is narrower and still
       worth doing:
-      - **rustls, a feature request rather than a bug. Drafted 2026-08-12.
-        Decision: post it AFTER the repo is public and the DOI exists, not before.**
-        Danny delegated the call, so the reasoning is recorded.
+      - **rustls: FILED 2026-08-13 as
+        [rustls/rustls#3214](https://github.com/rustls/rustls/issues/3214),
+        "Expose signature_algorithms_cert to ResolvesServerCert::resolve", state
+        OPEN.** Written by Danny in his own words per the project's AI policy, and
+        every version string, field name, RFC section, code point, and path checked
+        against this repository first. The sequencing decision below held: it went
+        out after the repo was public and the DOI existed, so it links a
+        DOI-bearing archive rather than a promise. Full record in
+        `docs/upstream/rustls-issue.md`.
+
+        **This was the gate on the article.** `docs/article-draft.md` names rustls
+        behaviour and is now clear to publish.
+
+        Original decision, kept for the reasoning. **A feature request rather than a
+        bug. Drafted 2026-08-12. Post it AFTER the repo is public and the DOI
+        exists, not before.** Danny delegated the call, so the reasoning is
+        recorded.
 
         The draft's weakest sentence is the one offering to share evidence from "a
         repository I am preparing to publish". Posted before publication, the issue
