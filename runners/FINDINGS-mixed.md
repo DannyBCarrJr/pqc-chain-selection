@@ -31,17 +31,20 @@ One chain per server, so nothing is masked by a fallback.
 
 | chain | `sigalgs` | `sigalgs_cert` | Certificate | CertVerify | outcome | expected |
 |---|---|---|---|---|---|---|
-| pqleaf | `0x0904` | `0x0403` | 2163 | 2428 | served | served |
+| pqleaf | `0x0904` | `0x0403` | 2164 | 2428 | served | served |
 | pqleaf | `0x0904` | `0x0904` | - | - | refused | refused |
 | pqleaf | `0x0403` | `0x0403` | - | - | refused | refused |
-| pqissuer | `0x0403` | `0x0904` | 6875 | 79 | **served** | served |
+| pqissuer | `0x0403` | `0x0904` | 6875 | 78 | **served** | served |
 | pqissuer | `0x0403` | `0x0403` | - | - | refused | refused |
 | pqissuer | `0x0904` | `0x0904` | - | - | refused | refused |
 
 CertificateVerify confirms the leaf key independently of anything the client
-claims: 2428 for an ML-DSA-44 leaf, 79 for an EC one. Both mixed shapes report
-the value their construction predicts, which is an internal consistency check on
-the harness as much as on OpenSSL.
+claims: 2428 for an ML-DSA-44 leaf, and about 78 for an EC one. Both mixed shapes
+report the value their construction predicts, which is an internal consistency
+check on the harness as much as on OpenSSL. Quote the ML-DSA number exactly and
+the EC one as approximate, because DER prepends a zero byte when the high bit of
+r or s is set, so an ECDSA P-256 CertificateVerify lands on 78, 79, or 80 across
+runs. See `RERUN-2026-08-10.md`.
 
 ## The cell that mattered
 
@@ -67,8 +70,8 @@ Certificate message, same depth 3, same harness:
 
 | chain | Certificate | vs classical |
 |---|---|---|
-| classical | 929 | 1.0x |
-| pqleaf (PQ key, classical signatures) | 2163 | 2.3x |
+| classical | 930 | 1.0x |
+| pqleaf (PQ key, classical signatures) | 2164 | 2.3x |
 | pqissuer (classical key, PQ signatures) | 6875 | 7.4x |
 | pq (both) | 8100 | 8.7x |
 

@@ -15,10 +15,10 @@ and `pq` (ML-DSA-44 root, int, leaf).
 
 | cell | `signature_algorithms` | `signature_algorithms_cert` | Certificate | CertVerify | chain sent | verdict |
 |---|---|---|---|---|---|---|
-| classical-only | `0x0403` | `0x0403` | 929 | 79 | classical | correct |
+| classical-only | `0x0403` | `0x0403` | 930 | 79 | classical | correct |
 | pq-only-cert-stock | `0x0904` | stock Go list | - | - | none | **fail-closed** |
 | pq-only-cert-pq | `0x0904` | `0x0904` | 8100 | 2428 | pq | correct |
-| both-cert-ecdsa-only | `0x0904,0x0403` | `0x0403` | 929 | 79 | classical | correct |
+| both-cert-ecdsa-only | `0x0904,0x0403` | `0x0403` | 930 | 80 | classical | correct |
 | both-cert-pq-only | `0x0904,0x0403` | `0x0904` | 8100 | 2428 | pq | correct |
 | both-cert-suppressed | `0x0904,0x0403` | absent | 8100 | 2428 | pq | correct |
 
@@ -69,12 +69,18 @@ Server-side handshake message length is therefore the ground truth, via
 
 | chain | Certificate | CertificateVerify |
 |---|---|---|
-| classical (EC) | 929 | 79 |
+| classical (EC) | 930 | 79 or 80 |
 | pq (ML-DSA-44) | 8100 | 2428 |
 
 An ML-DSA-44 signature is 2420 bytes and an ECDSA P-256 one is about 72, so the
 CertificateVerify length alone separates them with no ambiguity. The Certificate
 message is 8.7 times larger on the post-quantum chain.
+
+Quote the ML-DSA figures exactly and the classical ones as approximate. ECDSA
+signatures move by a byte or two because DER prepends a zero when the high bit of
+r or s is set, so `classical-only` and `both-cert-ecdsa-only` measure 79 and 80
+in the same run. Reminting the chains moves them again, which is why these
+numbers differ from the pre-remint ones in `RERUN-2026-08-10.md`.
 
 ## The split worth writing up
 
