@@ -1,3 +1,3 @@
-version:  TLS 1.3
-cipher:   TLS_AES_128_GCM_SHA256
-chain[0]: cn="control-rsa" pubkey=RSA sigalg=SHA256-RSA
+handshake: OK TLS 1.3 TLS_AES_128_GCM_SHA256
+served:    1 certificate(s)
+  [0] cn="control-rsa" key=RSA sig=SHA256-RSA (763 bytes DER)

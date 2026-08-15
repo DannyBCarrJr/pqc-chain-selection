@@ -38,10 +38,13 @@ cell() { # name, env-spec
     done
 
     local out="$EVID/$name.probe"
+    # -addr, not positional: the probe ignores positional arguments, and the old
+    # positional call only ever connected because PORT and the probe's default
+    # happened to both be 4433.
     if [[ "$spec" == "stock" ]]; then
-        ( cd "$SMOKE" && env -u PROBE_SIGALGS_CERT "$PROBE" "127.0.0.1:$PORT" ) > "$out" 2>&1 || true
+        ( cd "$SMOKE" && env -u PROBE_SIGALGS_CERT "$PROBE" -addr "127.0.0.1:$PORT" ) > "$out" 2>&1 || true
     else
-        ( cd "$SMOKE" && PROBE_SIGALGS_CERT="$spec" "$PROBE" "127.0.0.1:$PORT" ) > "$out" 2>&1 || true
+        ( cd "$SMOKE" && PROBE_SIGALGS_CERT="$spec" "$PROBE" -addr "127.0.0.1:$PORT" ) > "$out" 2>&1 || true
     fi
     wait "$srv" 2>/dev/null || true
 
@@ -51,7 +54,10 @@ cell() { # name, env-spec
     # exists to influence. An error here is itself a result: a server that
     # aborts rather than downgrade is behaving differently from one that
     # silently serves an excluded chain.
-    served="$(grep -oE 'cn="[^"]*" pubkey=[A-Za-z]+ sigalg=[A-Za-z0-9-]+' "$out" | head -1 || true)"
+    # Matches the probe's CURRENT print format. The old pattern kept matching
+    # the Phase 1 format after a887616 changed the probe to cn/key/sig, so this
+    # column read NO CHAIN for two phases while the gate looked green.
+    served="$(grep -oE 'cn="[^"]*" key=[A-Za-z0-9]+ sig=[A-Za-z0-9-]+' "$out" | head -1 || true)"
     [[ -n "$served" ]] || served="NO CHAIN: $(head -1 "$out" | cut -c1-60)"
 
     printf '%-11s %-16s %-46s %s\n' "$name" "$spec" "${ext:-<ext 50 ABSENT>}" "$served"
@@ -66,3 +72,11 @@ cell() { # name, env-spec
     cell restricted 0x0403,0x0804
     cell suppressed none
 } | tee "$EVID/gate.txt"
+
+# The served column is the measurement. Every cell here uses a classical server
+# pair the probe can always read, so a NO CHAIN fallback means the probe or the
+# extraction broke, and the gate must say so instead of printing it in green.
+if grep -q 'NO CHAIN' "$EVID/gate.txt"; then
+    echo "GATE FAILURE: a cell served no readable chain; see $EVID" >&2
+    exit 1
+fi

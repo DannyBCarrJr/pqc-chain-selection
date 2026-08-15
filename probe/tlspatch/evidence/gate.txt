@@ -1,5 +1,5 @@
 # Phase 1 gate, OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026), go version go1.26.0 linux/amd64
 
-stock       stock            TLS client extension "unknown" (id=50), len=26 cn="control-rsa" pubkey=RSA sigalg=SHA256-RSA
-restricted  0x0403,0x0804    TLS client extension "unknown" (id=50), len=6  cn="control-ecdsa" pubkey=ECDSA sigalg=ECDSA-SHA256
-suppressed  none             <ext 50 ABSENT>                                cn="control-rsa" pubkey=RSA sigalg=SHA256-RSA
+stock       stock            TLS client extension "unknown" (id=50), len=26 cn="control-rsa" key=RSA sig=SHA256-RSA
+restricted  0x0403,0x0804    TLS client extension "unknown" (id=50), len=6  cn="control-ecdsa" key=ECDSA sig=ECDSA-SHA256
+suppressed  none             <ext 50 ABSENT>                                cn="control-rsa" key=RSA sig=SHA256-RSA
