@@ -57,7 +57,7 @@ inside the client's `signature_algorithms` and the served chain follows the clie
 cannot steer this from a configuration file. During a migration the client population
 decides, one connection at a time.
 
-**Why nobody has scanned for this.** The asymmetry, and this is the strongest structural
+**Why we found no scan for this.** The asymmetry, and this is the strongest structural
 idea in the piece. The client's constraint rides in a plaintext ClientHello. The
 Certificate message is encrypted under the handshake traffic secret. A passive on-path
 observer therefore sees what the client asked for and never sees what came back, so the
