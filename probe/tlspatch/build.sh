@@ -7,9 +7,12 @@
 # copy of Go's BSD-licensed source, which keeps the diff small and the licensing
 # clean.
 #
-# The patch is two inserted lines in common.go plus one added file. With the
-# environment unset the resulting binary produces a byte-identical ClientHello
-# to stock Go, so the instrument has exactly one knob.
+# The patch is two inserted lines in common.go, one in handshake_client.go,
+# plus one added file. With the environment unset the resulting binary produces
+# a byte-identical ClientHello to stock Go and stock rejection behavior, so the
+# instrument's wire fingerprint still has exactly one knob; the third guard is
+# an observation knob (capture before rejecting an unusable chain) and never
+# touches the ClientHello.
 #
 # NOTE: `go run` and `go test` IGNORE -overlay (documented in `go help build`).
 # Anything using this patch must `go build` and then execute the binary.
@@ -41,14 +44,32 @@ END {
     }
 }' "$GOROOT_SRC/common.go" > "$BUILD/common.go"
 
-# 2. The helper, carrying its own imports so common.go needs no import surgery.
+# 2. handshake_client.go with a tolerance guard in the unsupported-public-key
+#    rejection. Stock Go alerts BEFORE the VerifyPeerCertificate capture runs,
+#    so a served-but-unusable chain reads as "nothing captured" when the true
+#    answer is "served, unusable". Gated on PROBE_TOLERATE_UNKNOWN_PUBKEY;
+#    unset means stock rejection, and the ClientHello is untouched either way.
+awk '
+/^\t\tc\.sendAlert\(alertUnsupportedCertificate\)$/ {
+    print "\t\tif probeTolerateUnknownPubkey() { break }"; hit++
+}
+{ print }
+END {
+    if (hit != 1) {
+        printf("ANCHOR FAILURE: alertUnsupportedCertificate=%d\n", hit) > "/dev/stderr"
+        exit 1
+    }
+}' "$GOROOT_SRC/handshake_client.go" > "$BUILD/handshake_client.go"
+
+# 3. The helper, carrying its own imports so common.go needs no import surgery.
 cp "$HERE/override.go.in" "$BUILD/zz_probe_override.go"
 
-# 3. Overlay map. Absolute paths are unavoidable here, which is why build/ is
+# 4. Overlay map. Absolute paths are unavoidable here, which is why build/ is
 #    gitignored: this file is a build artifact, never evidence.
 cat > "$BUILD/overlay.json" <<EOF
 {"Replace": {
   "$GOROOT_SRC/common.go": "$BUILD/common.go",
+  "$GOROOT_SRC/handshake_client.go": "$BUILD/handshake_client.go",
   "$GOROOT_SRC/zz_probe_override.go": "$BUILD/zz_probe_override.go"
 }}
 EOF
@@ -57,4 +78,4 @@ EOF
 
 echo "built: ${OUT/#$HOME/\~}"
 echo "go:    $(go version)"
-echo "patch: 2 guards in common.go + zz_probe_override.go"
+echo "patch: 2 guards in common.go + 1 in handshake_client.go + zz_probe_override.go"

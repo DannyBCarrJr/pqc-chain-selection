@@ -1,9 +1,10 @@
 // Added to crypto/tls at build time by ../tlspatch/build.sh via `go build -overlay`.
 // Not part of the Go distribution. See probe/tlspatch/README.md.
 //
-// This file exists so the patch to common.go is two inserted lines with no
-// import changes. common.go imports neither os nor strconv, and editing its
-// import block would be a far more fragile edit than adding a file.
+// This file exists so the patches to common.go (two inserted lines) and
+// handshake_client.go (one) need no import changes. Neither file imports os or
+// strconv, and editing an import block would be a far more fragile edit than
+// adding a file.
 
 package tls
 
@@ -28,6 +29,18 @@ import (
 // Values are deliberately NOT validated against known schemes and NOT filtered
 // by isDisabledSignatureAlgorithm. Sending unknown or policy-disabled code
 // points is a measurement the matrix needs, not a mistake to guard against.
+// probeTolerateUnknownPubkey gates a guard in verifyServerCertificate's
+// public-key-type rejection. Stock Go alerts BEFORE VerifyPeerCertificate runs,
+// so a served-but-unusable chain reads as "nothing captured" when the question
+// is what the server sent. Set PROBE_TOLERATE_UNKNOWN_PUBKEY to capture first;
+// the handshake still fails afterwards, at signature verification, and that
+// outcome is reported on its own line. Unset means stock rejection. This knob
+// never touches the ClientHello.
+func probeTolerateUnknownPubkey() bool {
+	_, set := os.LookupEnv("PROBE_TOLERATE_UNKNOWN_PUBKEY")
+	return set
+}
+
 func probeSigAlgOverride(env string) ([]SignatureScheme, bool) {
 	raw, set := os.LookupEnv(env)
 	if !set {

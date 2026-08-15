@@ -4,8 +4,15 @@
 //
 //	what did the server SEND      captured in VerifyPeerCertificate, which runs
 //	                              during the handshake and sees raw DER before
-//	                              anything can reject it
+//	                              validation can reject it
 //	could the client USE it       the handshake outcome, reported separately
+//
+// One rejection fires BEFORE that callback: stock Go alerts on a leaf whose
+// public key type it cannot use, measured 2026-08-14 against a served ML-DSA
+// chain. Set PROBE_TOLERATE_UNKNOWN_PUBKEY (see ../tlspatch) to capture first
+// and let the handshake fail afterwards; tools/which-chain.sh sets it. Without
+// the knob, such a chain reads as "NOTHING CAPTURED", which is wrong in the
+// exact way this probe exists to avoid.
 //
 // That split is required, not stylistic. Go 1.26 has no ML-DSA support in
 // crypto/tls or crypto/x509, so a Go client cannot complete a handshake against

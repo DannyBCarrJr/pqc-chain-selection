@@ -12,9 +12,17 @@ which are importable only from inside GOROOT. Copying the package out of the
 standard library and compiling it as an ordinary dependency does not work.
 
 `go build -overlay` swaps file contents at build time, so the repo stores the
-**injection** rather than a copy of Go's BSD-licensed source. The diff is two
+**injection** rather than a copy of Go's BSD-licensed source. The diff is three
 inserted lines plus one added file, the licensing stays clean, and the patch
 follows Go version bumps instead of freezing against one.
+
+The third line (added 2026-08-14 for `tools/which-chain.sh`) is a guard in the
+client's unsupported-public-key rejection, gated on
+`PROBE_TOLERATE_UNKNOWN_PUBKEY`. Stock Go alerts before the raw-DER capture
+callback runs, so a served-but-unusable chain read as "nothing captured" when
+the question is what the server sent. The knob changes nothing in the
+ClientHello, so the wire fingerprint keeps exactly one knob; with the
+environment unset, rejection is stock byte for byte.
 
 Rejected alternative: uTLS, which is purpose-built for ClientHello control and
 would have worked. It was not chosen because it constructs a synthetic
