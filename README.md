@@ -175,9 +175,26 @@ on-path observer sees the constraint and never the response. Detecting this need
 an active client, the handshake keys, or instrumentation on the server. That is
 why a fleet-wide scan for it does not exist.
 
+## Test your own server
+
+```
+probe/tlspatch/build.sh && tools/which-chain.sh your-host:4433
+```
+
+Five connections, each a different client story: classical-only, post-quantum
+preferred, classical preferred, and one exclusion in each direction. The output
+is which chain came back per story and a verdict: preference-driven selection,
+excluded chain withheld, excluded chain sent anyway (conformant, and silent for
+the client), or fail-closed. Chain identity is read from the captured DER by
+openssl, so a chain the Go client cannot use is still named rather than
+reported as "no data". `tools/which-chain.test.sh` proves both directions
+against a local dual-chain and single-chain `s_server` before you point it at
+anything real.
+
 ## Layout
 
 - `probe/` the forked-`crypto/tls` client, emitting the two extensions independently
+- `tools/` `which-chain.sh`, the same probe pointed at your own server
 - `gen/` the chain shapes, minted and pinned
 - `runners/` one harness per stack, plus `selfcheck.sh` and the evidence tree
 - `runners/FINDINGS*.md` per-column results, each stamped Verified or Reported
