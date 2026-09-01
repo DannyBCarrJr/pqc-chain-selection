@@ -62,3 +62,40 @@ as a surprise.
 `-quiet` suppresses `-tlsextdebug` entirely, which produced a silent empty
 capture on the first run. Any runner in this repo that needs extension output
 must not pass `-quiet`.
+
+## Addendum 2026-08-31: the same two lists from a default Config
+
+Run 2026-08-31, same toolchain (`evidence/stock-versions.txt`). Reproduce with
+`./run-stock.sh` (certs from `./gen-classical-pair.sh`). Evidence in
+`evidence/stock-client-extensions.txt`.
+
+**Stamp: Verified.** Captured output, same `-tlsextdebug` instrument as above.
+
+The probe above pins MinVersion to TLS 1.3, and that pin changes the handshake
+list: at min 1.3 Go drops PKCS#1 v1.5 and SHA-1 (the 7 schemes behind len=16 in
+finding 1), at the default minimum it drops SHA-1 only. A client with a default
+`tls.Config` sends:
+
+```
+TLS client extension "signature algorithms" (id=13), len=22
+0000 - 00 14 08 04 04 03 08 07-08 05 08 06 04 01 05 01   ................
+0010 - 06 01 05 03 06 03                                 ......
+TLS client extension "unknown" (id=50), len=26
+0000 - 00 18 08 04 04 03 08 07-08 05 08 06 04 01 05 01   ................
+0010 - 06 01 05 03 06 03 02 01-02 03                     ..........
+```
+
+10 schemes against 12, and the hex says which: extension 50 is extension 13
+byte for byte plus `02 01` (rsa_pkcs1_sha1) and `02 03` (ecdsa_sha1) appended.
+The mechanism is `isDisabledSignatureAlgorithm` in `crypto/tls/common.go`
+(go1.26.0): its `isCert` branch filters nothing in a default (non-FIPS) build,
+with a source comment explaining the intent. So the cert list is a superset
+either way, by SHA-1 alone at the default minimum, by SHA-1 plus PKCS#1 v1.5
+at min 1.3.
+
+The extension-13 length moving with the config (16 in finding 1, 22 here) is
+also the control: the instrument tracks the client rather than echoing a stale
+format.
+
+Recorded because rustls #3214 asked whether differing lists are a practical
+concern. A default Go client sends them on every TLS 1.2+ dial.
