@@ -90,6 +90,22 @@ exercises the server's chain check cannot use post-quantum certificates, and the
 stack that can use them never triggers the check.** Both halves are Verified on
 this machine, from source and from the wire.
 
+## Qualifier added 2026-10-16: the check is one certificate deep
+
+"`signature_algorithms_cert` is the deciding variable" holds for every cell above,
+and it holds for exactly one certificate. Read at the `openssl-3.5.5` tag,
+`check_cert_usable()` in `ssl/t1_lib.c` receives the leaf alone, checks its issuer
+signature only when the client sent the extension, and never reads the
+intermediate's signature. The two chains here differ in leaf key type and leaf
+signature at once, so no cell above tests the intermediate's signature on its own.
+
+The Amazon and OpenSSL position paper for the IAB workshop (Kampanakis and Dukhovni,
+2026-08-25) measured that depth with cross-signed shapes and found the servers
+picking by leaf key alone. Both results are correct at their own depth. The
+reconciliation, the paper's URL, the slot rule that makes their first shape a
+one-chain server on `s_server`, and the cell owed on this harness are in
+`PRIOR-ART.md` under "Stated from the implementer side". Stamp: Reported.
+
 ## One bug worth remembering
 
 `grep -oE 'Handshake \[length ([0-9a-f]+)\], Certificate$' | grep -oE '[0-9a-f]+'`

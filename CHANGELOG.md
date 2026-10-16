@@ -7,6 +7,20 @@ All notable changes to this project are documented here. The format follows
 For a measurement corpus, a breaking change is one that would alter a published
 number or retract a claim. Those are recorded here as prominently as additions.
 
+## [Unreleased]
+
+### Cited
+
+- The Amazon and OpenSSL position paper for the IAB Workshop on Accelerating the Deployment
+  of Post-Quantum Authentication (Kampanakis and Dukhovni, dated 2026-08-25, datatracker
+  S23) as the implementer's own
+  statement of the chain-selection finding, measured on cross-signed shapes this repo
+  did not run. Reconciled against the six OpenSSL dual-chain cells from source at the
+  `openssl-3.5.5` tag: `check_cert_usable()` checks one certificate, so the extension is
+  honored one signature deep and only when sent. `PRIOR-ART.md` and `runners/FINDINGS.md`.
+  No measured number changes and no claim is retracted; the six-cell result gains a
+  depth qualifier.
+
 ## [1.0.0] - 2026-08-13
 
 First public release. Measured behaviour of TLS 1.3 server software choosing which
