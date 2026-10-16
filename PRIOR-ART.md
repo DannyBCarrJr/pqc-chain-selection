@@ -487,9 +487,11 @@ practical relevance" because "CAs try hard to avoid mixing algorithms, and this 
 basically a non-issue", and the issue closed 2026-08-13. The paper he co-authored is
 dated 2026-08-25, and its appendix says the behaviour never surfaced because "it has not
 been common for an entity to get issued and use two identity certificates with the same
-public key tying to different issuing CAs and certificate chains." Both are true. The
-code was written for a PKI that did not mix algorithms inside a chain, and the
-post-quantum transition is the first deployment where mixing is the design.
+public key tying to different issuing CAs and certificate chains." Both are true. In the
+classical PKI it was a non-issue twice over: CAs avoided mixing inside a chain, and every
+client could verify RSA and ECDSA anyway (the same comment allows a P-384 CA key signing
+a P-256 leaf). The transition breaks both halves at once: mixing is the design, and
+ML-DSA is a signature a current client may not verify at all.
 
 **Rules that travel with this citation.**
 
