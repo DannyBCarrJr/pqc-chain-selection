@@ -432,6 +432,87 @@ Cross-reference: the same mechanism, developed for the inventory-tool case, is i
 `pqc-cert-matrix` under "Why the parse-based path is structural rather than lazy".
 Keep the two in step if either is edited.
 
+## Stated from the implementer side, and bounded by it. Added 2026-10-16.
+
+**"Practical Challenges with Cross-signed Certs as a signature algorithm transition
+mechanism"**, Panos Kampanakis (Amazon, by the address on the paper) and Viktor Dukhovni
+(OpenSSL committer, per openssl.org's committers page, read 2026-10-16), dated 2026-08-25.
+Position paper S23 for the IAB Workshop on Accelerating the Deployment of Post-Quantum
+Authentication, Prague, 2026-10-11 and 12. https://www.ietf.org/slides/slides-pqws-s23-00.pdf, datatracker record
+`slides-pqws-s23-00` posted 2026-10-07. Three pages, downloaded and read in full
+2026-10-16, sha256 `ee735314a76240419ad7db9e3e0d92a73a6755adb5eb52749124727348bc07c1`.
+
+**What it says.** OpenSSL 3.5.5, s2n-tls 1.7.7, and nginx 1.31.4 (with OpenSSL 3.5.5)
+pick the leaf to send "based on the leaf public key" and were "not honoring the client
+advertised sigAlgs in any of the signatures in the cert chain." Measured on two
+cross-signed shapes: one ECDSA key issued two leaves, under an ECDSA and an ML-DSA
+intermediate; and one ML-DSA intermediate cross-signed by an ECDSA root and an ML-DSA
+root. A legacy client can be handed the ML-DSA intermediate on configuration order and
+fail. Conclusion, verbatim: "some TLS implementations would need well-defined certificate
+chain picking logic updates." The word is "error prone", never "violation".
+
+**How it fits this matrix without contradicting it.** Here, OpenSSL 3.5.5 honored
+`signature_algorithms_cert` in all six dual-chain cells and refused the deciding cell.
+Both results hold, and the reconciliation is one function, read at the `openssl-3.5.5`
+tag (commit `67b5686b`) on 2026-10-16: `check_cert_usable()` in `ssl/t1_lib.c`, 52
+lines, byte-identical on master as of 2026-08-13 except a spelling fix in a comment.
+
+1. The certificate is chosen by key type, from the schemes shared through
+   `signature_algorithms` (`find_sig_alg()`). That is the paper's "leaf public key".
+2. The certificate's own issuer signature is checked only when the client sent
+   `signature_algorithms_cert`. Our deciding cell and all six dual-chain cells live here.
+3. The function receives one certificate. Its own comment: "we do not have a chain here
+   that lets us look at the key OID in the signing certificate." The intermediate's
+   signature, where a cross-sign lives, is never examined on the selection path.
+4. With no extension: "Without signat_algorithms_cert, any certificate for which we have
+   a viable public key is permitted." RFC 8446 4.2.3 says `signature_algorithms` applies
+   to certificate signatures in that case. OpenSSL does not apply it. That is #32223,
+   open, labelled `help wanted`, with a maintainer note dated 2026-08-14 that it closes
+   after a year untouched.
+
+So the paper measured the depth the check does not reach, and this repo measured the one
+certificate it does. **The six-cell result stands with a qualifier: OpenSSL honors the
+extension one certificate deep, and only when the client sends it.** The dual-chain cells
+here differ in leaf key type and leaf signature at once, so they never tested the
+intermediate's signature on its own. `runners/FINDINGS.md` carries the same qualifier.
+
+One more mechanism, same tag, `ssl_set_cert()` in `ssl/ssl_rsa.c`: one certificate slot
+per key type, and loading a second certificate of the same key type frees the first.
+On the library's ordinary loading path the paper's first shape leaves the server holding
+whichever ECDSA-keyed leaf was loaded last. There is no selection to get wrong.
+
+**The timeline, because it is the evidence that this is a transition problem.** In
+#32221 on 2026-08-12 Dukhovni called the mismatch "a technicality with little to no
+practical relevance" because "CAs try hard to avoid mixing algorithms, and this is
+basically a non-issue", and the issue closed 2026-08-13. The paper he co-authored is
+dated 2026-08-25, and its appendix says the behaviour never surfaced because "it has not
+been common for an entity to get issued and use two identity certificates with the same
+public key tying to different issuing CAs and certificate chains." Both are true. The
+code was written for a PKI that did not mix algorithms inside a chain, and the
+post-quantum transition is the first deployment where mixing is the design.
+
+**Rules that travel with this citation.**
+
+- Cite it as the implementer's own statement of the finding. Never as "they confirmed
+  us". They measured different cells, and the matrix here does not reach their depth.
+- Conformance, never a bug. The paper does not say violation and neither does this repo.
+- s2n-tls is theirs. Nothing here has run s2n-tls.
+- Dukhovni presented the paper in the workshop's enterprise session on 2026-10-12 and
+  went past it in the room. None of that is citable until the IAB workshop report or the
+  published transcripts carry it. The paper and the GitHub comments are the sources.
+- The paper's shapes are owed on this harness. Shape one on `s_server` is a one-chain
+  server by the slot rule above, so the cell to run is shape two: an ML-DSA leaf under an
+  ML-DSA intermediate, a client sending `signature_algorithms_cert` with ML-DSA, and the
+  served intermediate read from the wire. Prediction from the source: served, whichever
+  intermediate is configured, because the function never reads it.
+
+**Stamps.** The paper's measurements, the two issue comments, and the source reading are
+Reported. The mapping of the paper's first shape onto branch 4 is **Proposed**: it
+assumes their legacy client omitted `signature_algorithms_cert`, which the paper does not
+state; a client sending the extension with ECDSA alone would have been refused the
+ML-DSA-signed leaf, as this repo's deciding cell was. The mapping of the second shape
+onto branch 3 follows from the source and the paper's own description of the shape.
+
 ## Adjacent work that proposes rather than measures
 
 **Frauenschläger, T. and Mottok, J., "Using Dual Algorithm Certificates in TLS:
