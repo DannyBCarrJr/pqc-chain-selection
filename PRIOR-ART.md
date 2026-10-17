@@ -502,18 +502,24 @@ ML-DSA is a signature a current client may not verify at all.
 - Dukhovni presented the paper in the workshop's enterprise session on 2026-10-12 and
   went past it in the room. None of that is citable until the IAB workshop report or the
   published transcripts carry it. The paper and the GitHub comments are the sources.
-- The paper's shapes are owed on this harness. Shape one on `s_server` is a one-chain
-  server by the slot rule above, so the cell to run is shape two: an ML-DSA leaf under an
-  ML-DSA intermediate, a client sending `signature_algorithms_cert` with ML-DSA, and the
-  served intermediate read from the wire. Prediction from the source: served, whichever
-  intermediate is configured, because the function never reads it.
+- Shape two ran on this harness 2026-10-17 (`runners/cross-signed-ica.sh`,
+  `runners/FINDINGS-cross-signed.md`): an ML-DSA-44 leaf under an ML-DSA-44 intermediate
+  key holding two certificates, one from the ML-DSA root and one from the EC root. With
+  the EC-signed intermediate configured and the client sending `signature_algorithms_cert`
+  with mldsa44 alone, OpenSSL served it, identified by its DER bytes in the server's
+  Certificate message. The same configuration refused when the client excluded ML-DSA
+  on certificates, because the leaf's own signature is checked. The prediction from
+  source, served whichever intermediate is configured, held. Shape one stays unrun on
+  `s_server`: by the slot rule above it is a one-chain server.
 
 **Stamps.** The paper's measurements, the two issue comments, and the source reading are
 Reported. The mapping of the paper's first shape onto branch 4 is **Proposed**: it
 assumes their legacy client omitted `signature_algorithms_cert`, which the paper does not
 state; a client sending the extension with ECDSA alone would have been refused the
 ML-DSA-signed leaf, as this repo's deciding cell was. The mapping of the second shape
-onto branch 3 follows from the source and the paper's own description of the shape.
+onto branch 3 is **Verified** as of 2026-10-17, measured on `s_server` in
+`runners/FINDINGS-cross-signed.md`. What their client sent in either shape is theirs
+to say, and this repo does not guess it.
 
 ## Adjacent work that proposes rather than measures
 

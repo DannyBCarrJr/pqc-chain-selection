@@ -106,6 +106,12 @@ reconciliation, the paper's URL, the slot rule that makes their first shape a
 one-chain server on `s_server`, and the cell owed on this harness are in
 `PRIOR-ART.md` under "Stated from the implementer side". Stamp: Reported.
 
+That cell ran 2026-10-17: `FINDINGS-cross-signed.md`. An ECDSA-signed intermediate
+under an ML-DSA leaf was served to a client whose `signature_algorithms_cert` held
+mldsa44 alone, identified by its DER bytes in the Certificate message, and the
+same configuration refused when the client excluded the leaf's own signature. The
+depth of the check is Verified.
+
 ## One bug worth remembering
 
 `grep -oE 'Handshake \[length ([0-9a-f]+)\], Certificate$' | grep -oE '[0-9a-f]+'`

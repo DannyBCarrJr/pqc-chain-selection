@@ -17,6 +17,12 @@
 #   pqleaf      EC root    -> EC int    -> ML-DSA-44 leaf  PQ key, classical signature
 #   pqissuer    ML-DSA-44  -> ML-DSA-44 -> EC leaf         classical key, PQ signature
 #
+# Plus one cross-signed intermediate, added 2026-10-17 for the Kampanakis and
+# Dukhovni appendix B shape (PRIOR-ART.md, "Stated from the implementer side"):
+# the pq intermediate KEY gets a second certificate from the classical EC root,
+# chains/pq/int-xsign-ec.crt. Same key, same subject, so the pq leaf verifies
+# under either certificate. Which one a server sends is runners/cross-signed-ica.sh.
+#
 # ML-DSA-44 throughout rather than 65 or 87: the question here is algorithm
 # identity in selection logic, not size. pqc-cert-matrix and pqc-chain-budget
 # own the size axis.
@@ -75,6 +81,17 @@ mint_chain() { # $1 name, $2 root_alg, $3 int_alg, $4 leaf_alg
   echo
 }
 
+cross_sign_ica() {
+  local d=chains/pq
+  echo "== cross-sign: pq intermediate key under the classical (EC) root =="
+  run openssl x509 -req -in "$d/int.csr" -CA chains/classical/root.crt -CAkey chains/classical/root.key \
+      -out "$d/int-xsign-ec.crt" -days 60 -extfile <(printf '%s\n' "$ext_int")
+  echo "-- verify (gate): the pq leaf under each intermediate certificate --"
+  run openssl verify -CAfile "$d/root.crt" -untrusted "$d/int.crt" "$d/leaf.crt"
+  run openssl verify -CAfile chains/classical/root.crt -untrusted "$d/int-xsign-ec.crt" "$d/leaf.crt"
+  echo
+}
+
 sigalg() { openssl x509 -in "$1" -noout -text | awk '/Signature Algorithm/{print $3; exit}'; }
 keyalg() { openssl x509 -in "$1" -noout -text | awk '/Public Key Algorithm/{print $4; exit}'; }
 
@@ -86,6 +103,8 @@ summary() {
     printf '%-10s %-24s %-24s %-24s\n' "$c" \
       "$(keyalg chains/$c/leaf.crt)" "$(sigalg chains/$c/leaf.crt)" "$(sigalg chains/$c/int.crt)"
   done
+  printf '%-10s %-24s %-24s %-24s\n' "pq-xsign" \
+    "$(keyalg chains/pq/leaf.crt)" "$(sigalg chains/pq/leaf.crt)" "$(sigalg chains/pq/int-xsign-ec.crt)"
 }
 
 {
@@ -95,6 +114,7 @@ summary() {
   mint_chain pq        ML-DSA-44 ML-DSA-44 ML-DSA-44
   mint_chain pqleaf    EC        EC        ML-DSA-44
   mint_chain pqissuer  ML-DSA-44 ML-DSA-44 EC
+  cross_sign_ica
   summary
 } 2>&1 | tee evidence/mint-chains.txt
 
