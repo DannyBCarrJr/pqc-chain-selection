@@ -9,6 +9,18 @@ number or retract a claim. Those are recorded here as prominently as additions.
 
 ## [Unreleased]
 
+### Added
+
+- `runners/cross-signed-ica.sh` and `runners/FINDINGS-cross-signed.md`, run 2026-10-17:
+  the Kampanakis and Dukhovni appendix B shape on `s_server`, four cells. One ML-DSA-44
+  intermediate key with two certificates (ML-DSA root and EC root) under one ML-DSA-44
+  leaf. The EC-signed intermediate was served to a client sending
+  `signature_algorithms_cert` with mldsa44 alone; both negative controls refused at the
+  leaf. The served intermediate is identified by DER bytes in the server's Certificate
+  message and the client's two extensions are read from its ClientHello bytes.
+  `gen/mint-chains.sh` now mints the cross-signed intermediate. The 2026-10-16 depth
+  qualifier moves from Proposed to Verified for that shape. No earlier number changes.
+
 ### Cited
 
 - The Amazon and OpenSSL position paper for the IAB Workshop on Accelerating the Deployment

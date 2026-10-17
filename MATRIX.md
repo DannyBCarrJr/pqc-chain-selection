@@ -56,6 +56,16 @@ predict would fail, `pqissuer` with `sigalgs_cert` accepting ML-DSA while
 `signature_algorithms` does not. It was served, so on this path the two
 extensions are treated as independent lists rather than one filtering the other.
 
+### OpenSSL `s_server`, cross-signed intermediate (`runners/cross-signed-ica.sh`)
+
+Four cells, run 2026-10-17. One ML-DSA-44 leaf under one ML-DSA-44 intermediate key
+that holds two certificates, one signed by the ML-DSA root and one by the EC root.
+With the EC-signed intermediate configured and a client accepting ML-DSA signatures
+on certificates and nothing else, OpenSSL served it; the intermediate is identified
+by its DER bytes in the Certificate message. The two negative controls, the same
+configurations under a client accepting ECDSA alone, refused at the leaf. The check
+honors `signature_algorithms_cert` one certificate deep. `runners/FINDINGS-cross-signed.md`.
+
 ### nginx (`runners/nginx.sh`)
 
 | cell | `sigalgs` | `sigalgs_cert` | result |

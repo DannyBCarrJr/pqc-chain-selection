@@ -1,0 +1,17 @@
+# cross-signed intermediate, 2026-10-17T19:20:08Z
+# OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026) | go version go1.26.8 linux/amd64
+# server: pq/leaf.crt (ML-DSA-44 key, ML-DSA-44 signature) plus ONE intermediate certificate
+# 0x0403=ecdsa_secp256r1_sha256  0x0904=mldsa44
+# want= is what RFC 8446 4.4.2.2 asks for given the chain and the client constraints
+# served= the intermediate whose DER bytes appear in the Certificate message
+
+# sent= the two extensions as found in the ClientHello bytes of the same dump
+cell             intermediate       sigalgs  sigalgs_cert    Cert CertVfy  got      expected      served                           wire
+---------------- ------------------ -------- ---------- ------- -------  -------- ------------- -------------------------------- ----
+# client accepts ML-DSA signatures on certificates and nothing else
+pq-ica-mldsa     int.crt            0x0904   0x0904        8100    2428  served   want=served   int.crt(ML-DSA-signed)           sent=sa:ok,sac:ok      
+pq-ica-xsign     int-xsign-ec.crt   0x0904   0x0904        5753    2428  served   want=refused  int-xsign-ec.crt(ECDSA-signed)   sent=sa:ok,sac:ok    <-
+
+# client accepts ECDSA signatures on certificates and nothing else (negative controls)
+pq-ica-mldsa-ec  int.crt            0x0904   0x0403           -       -  refused  want=refused  none                             sent=sa:ok,sac:ok      
+pq-ica-xsign-ec  int-xsign-ec.crt   0x0904   0x0403           -       -  refused  want=refused  none                             sent=sa:ok,sac:ok      

@@ -68,6 +68,16 @@ subject=CN=localhost
 $ openssl verify -CAfile chains/pqissuer/root.crt -untrusted chains/pqissuer/int.crt chains/pqissuer/leaf.crt
 chains/pqissuer/leaf.crt: OK
 
+== cross-sign: pq intermediate key under the classical (EC) root ==
+$ openssl x509 -req -in chains/pq/int.csr -CA chains/classical/root.crt -CAkey chains/classical/root.key -out chains/pq/int-xsign-ec.crt -days 60 -extfile /dev/fd/63
+Certificate request self-signature ok
+subject=CN=Selection pq Intermediate
+-- verify (gate): the pq leaf under each intermediate certificate --
+$ openssl verify -CAfile chains/pq/root.crt -untrusted chains/pq/int.crt chains/pq/leaf.crt
+chains/pq/leaf.crt: OK
+$ openssl verify -CAfile chains/classical/root.crt -untrusted chains/pq/int-xsign-ec.crt chains/pq/leaf.crt
+chains/pq/leaf.crt: OK
+
 == what each shape actually is ==
 chain      leaf key                 leaf signature           int signature           
 ---------- ------------------------ ------------------------ ------------------------
@@ -75,3 +85,4 @@ classical  id-ecPublicKey           ecdsa-with-SHA256        ecdsa-with-SHA256
 pq         ML-DSA-44                ML-DSA-44                ML-DSA-44               
 pqleaf     ML-DSA-44                ecdsa-with-SHA256        ecdsa-with-SHA256       
 pqissuer   id-ecPublicKey           ML-DSA-44                ML-DSA-44               
+pq-xsign   ML-DSA-44                ML-DSA-44                ecdsa-with-SHA256       
